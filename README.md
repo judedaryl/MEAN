@@ -170,18 +170,17 @@ Setup a create route in *users.js*. Note that this is using a **POST** method
     };
 ```
 
-Let's test! Run your server using **npm run dev** and est this using **Postman**. Send a x-www-form-urlencoded POST request with
+Let's test! Run your server using **npm run dev** and test this using **Postman**. Send a x-www-form-urlencoded POST request with
 a **email** and **password** set under the **Body** tab. Your Postman windows should look like this:
 ![create]
 
 
-MongoDB auto generates a **unique id** for each entry, now take note of the _id, in my case its **5a61b7290d86151900527bc6**. We will
+MongoDB auto generates a **unique id** for each entry, now take note of the _id. We will
 be using this in the next route.
 
 ## READ route 
 For this example, we will be retrieving a user using the unique ID. This
 ID is a mongoDB objectID. 
-
 Add this on the top portion of **users.js**
 ```javascript
     var objectid = require('mongodb').ObjectID;
@@ -201,8 +200,9 @@ Setup a read route in **users.js** just below our create route. Note that this i
     });
 ```
 
-Let's try this using Postman. Use the _id you created from the **CREATE** route, for me _id is **5a61b7290d86151900527bc6**.
-In your Postman, don't forget to set the method to **GET** and use "http://localhost:9090/users/<_id>".
+Let's try this using Postman. Use the _id you created from the **CREATE** route, In your Postman, don't forget to set the 
+method to **GET** and use "http://localhost:9090/users/<_id>".
+
 ![read-one]
 
 
