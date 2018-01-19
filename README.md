@@ -4,7 +4,7 @@ MongoDB, Express, AngularJS, NodeJS
 This will be a step-by-step walkthrough with explanation and codes. No worries if you 
 have trouble with the code, you can check the codes in the folders inside this git.
 
-## Setting up a back-end server (Node using Express and MongoClient)
+# Setting up a back-end server (Node using Express and MongoClient)
 
 ## Getting our node and express working
 Install [node].
@@ -82,13 +82,13 @@ Inside, add the URL of our database.
         url : '<monggodb_url>'
     }
 ```
-Let's declare this with our **server.js**
+Let's declare this with our `server.js`
 ```javascript
     const db             = require('./config/db');
 ```
 
-Note that we've only declared this in our **server.js**, we will be listening to our
-port and sending the received data to our **MongoDB** later on.
+Note that we've only declared this in our `server.js`, we will be listening to our
+port and sending the received data to our `MongoDB` later on.
 
 ## CRUD routes (create, read, update and delete)
 We will be creating 5 routes, a *CREATE* route, *READ* route (read 1 and read all),
@@ -122,7 +122,7 @@ Setup *users.js* with
 ```
 
 ## Linking our server.js to our MongoDB
-Now that we have our route files setup, let's change our **server.js** file
+Now that we have our route files setup, let's change our `server.js` file
 
 Remove
 
@@ -147,7 +147,7 @@ Replace with
 ```
 
 ## CREATE route
-Setup a create route in *users.js*. Note that this is using a **POST** method
+Setup a create route in *users.js*. Note that this is using a `POST` method
 
 ```javascript
     //users.js
@@ -171,24 +171,24 @@ Setup a create route in *users.js*. Note that this is using a **POST** method
     };
 ```
 
-Let's test! Run your server using **npm run dev** and test this using **Postman**. Send a x-www-form-urlencoded POST request with
-a **email** and **password** set under the **Body** tab. Your Postman windows should look like this:
+Let's test! Run your server using `npm run dev` and test this using `Postman`. Send a x-www-form-urlencoded POST request with
+a `email` and `password` set under the `Body` tab. Your Postman windows should look like this:
 ![create]
 
 
-MongoDB auto generates a **unique id** for each entry, now take note of the _id. We will
+MongoDB auto generates a `unique id` for each entry, now take note of the _id. We will
 be using this in the next route.
 
 ## READ route 
 For this example, we will be retrieving a user using the unique ID. This
 ID is a mongoDB objectID. 
-Add this on the top portion of **users.js**
+Add this on the top portion of `users.js`
 ```javascript
     var objectid = require('mongodb').ObjectID;
 ```
 
 ## READ route (Single entry)
-Setup a read route in **users.js** just below our create route. Note that this is using a **GET** method.
+Setup a read route in `users.js` just below our create route. Note that this is using a `GET` method.
 ```javascript
     //users.js
     app.get('/users/:id', (req,res) =>{
@@ -201,8 +201,8 @@ Setup a read route in **users.js** just below our create route. Note that this i
     });
 ```
 
-Let's try this using Postman. Use the _id you created from the **CREATE** route, In your Postman, don't forget to set the 
-method to **GET** and use "http://localhost:9090/users/<_id>".
+Let's try this using Postman. Use the _id you created from the `CREATE` route, In your Postman, don't forget to set the 
+method to `GET` and use "http://localhost:9090/users/<_id>".
 
 ![read-one]
 
@@ -218,13 +218,13 @@ Add this code below the read single entry route.
         });
     });
 ```
-You can test this again using postman, using **GET** method and the url "http://localhost:9090/users"
+You can test this again using postman, using `GET` method and the url "http://localhost:9090/users"
 
 ![read-all]
 
 ## UPDATE route (Updating all fields)
-This route shares the characteristic of both the **CREATE** route and the **READ** route, place this code below the *read* routes.
-Note that this is using a **PUT** method.
+This route shares the characteristic of both the `CREATE` route and the `READ` route, place this code below the *read* routes.
+Note that this is using a `PUT` method.
 
 ```javascript
     //users.js
@@ -243,16 +243,16 @@ Note that this is using a **PUT** method.
     });
 ``` 
 
-Let's try to update the user we used earlier. Using Postman set the method to **PUT** and use the url "http://localhost:9090/users/<_id>".
-Don't forget to fill-up the **Body** > **x-www-form-urlencoded** with a new set of user details.
+Let's try to update the user we used earlier. Using Postman set the method to `PUT` and use the url "http://localhost:9090/users/<_id>".
+Don't forget to fill-up the `Body` > `x-www-form-urlencoded` with a new set of user details.
 
 
 ![update-all]
 
 ## UPDATE route (Updating a specific field)
-The route above will update all data with respect to the **_id** provided. And this is not what happens in most cases, when updating
+The route above will update all data with respect to the `_id` provided. And this is not what happens in most cases, when updating
 data we usually update a portion leaving the rest of it untouched. The code for this is the same for the above but we will be using the 
-**$set** operator. We will also change our route, so that it's unique. 
+`$set` operator. We will also change our route, so that it's unique. 
 
 For this example we will only be updating the email field of the user we used earlier.
 
@@ -274,14 +274,14 @@ For this example we will only be updating the email field of the user we used ea
         console.log(userdetails)
     });
 ``` 
-Using Postman set the method to **PUT** and use the url "http://localhost:9090/users/<_id>".
-Fill up the email field of **Body** > **x-www-form-urlencoded** with new details and disable the password field (Although this won't matter
+Using Postman set the method to `PUT` and use the url "http://localhost:9090/users/<_id>".
+Fill up the email field of `Body` > `x-www-form-urlencoded` with new details and disable the password field (Although this won't matter
 since our route only processes the email portion of the data).
 
 ![update-email]
 
 ## DELETE route
-Deleting an entry shares the characteristics as finding one, place this below the **UPDATE** route.
+Deleting an entry shares the characteristics as finding one, place this below the `UPDATE` route.
 
 ```javascript
     //users.js
@@ -298,20 +298,22 @@ Deleting an entry shares the characteristics as finding one, place this below th
     });
 ``` 
 Finally, let's try getting rid of the user with the _id we used for all the other routes.
-Use Postman and set the method to **Delete**, use the url "http://localhost:9090/users/<_id>".
+Use Postman and set the method to `Delete`, use the url "http://localhost:9090/users/<_id>".
 
 ![delete]
 
 ## Backend Complete!
 You now have a working NodeJS API which can process the CREATE, READ, UPDATE, and DELTE! Now let's start working on our frontend.
 
-## Setting up our Frontend using AngularJS
 
-Create a new folder named **public** under the root folder, this is where we will place all front-end related stuff.
+
+# Setting up our Frontend using AngularJS
+
+Create a new folder named `public` under the root folder, this is where we will place all front-end related stuff.
 
     root > public
 
-Open **cmd.exe** as **administrator** and go to the public folder
+Open `cmd.exe` as `administrator` and go to the public folder
 
     cd C:\Users\<user>\mean\public
     
@@ -347,12 +349,12 @@ Just go back to the comand line, and run the following:
 
     cd homunculi
     npm install -g @angular-devkit/core
+    npm i -D @angular-devkit/core
 
     
 ## Add semantic-ui to the application
 
-    I've been using this user interface for quite some time now, so for those who aren't yet familiar with this you can check its documentation
-    on the official [semantic-ui site].
+I've been using this user interface for quite some time now, so for those who aren't yet familiar with this you can check its documentation on the official [semantic-ui site].
 
 ### Install Gulp
 
@@ -377,7 +379,7 @@ Let's integrate this to our angular project.
 
     Open root > public > homunculi > .angular-cli.json
 
-Find **"styles"** and **"scripts"** and add the following:
+Find `"styles"` and `"scripts"` and add the following:
 
       "styles": [
         "styles.css",
@@ -392,7 +394,7 @@ Now that our UI is ready, let's proceed with customizing our application.
 
 ## Change the application title
 
-Open the component class file ( app.component.ts ) and change the value of the **title** property to 'Homunculi'
+Open the component class file ( app.component.ts ) and change the value of the `title` property to 'Homunculi'
     
 ```typescript
     //app.component.ts
@@ -407,7 +409,7 @@ Open the template file and replace the auto generated template by the Angular CL
 ```
 ## Add some global styles
 
-Open **styles.css** and place the following css code:
+Open `styles.css` and place the following css code:
 
 ```css
     .p-0 {
@@ -438,11 +440,11 @@ Open **styles.css** and place the following css code:
 ```
 ## Create a home component
 
-Use Angular CLI to generate a new component **home**
+Use Angular CLI to generate a new component `home`
 
     ng generate component home
 
-The CLI will create a new folder, **src/app/home** and generate three files. Open **home.component.html** and copy the code below.
+The CLI will create a new folder, `src/app/home` and generate three files. Open `home.component.html` and copy the code below.
 
 ```html
     <div class="ui text container">
@@ -455,11 +457,11 @@ The CLI will create a new folder, **src/app/home** and generate three files. Ope
 ```
 ## Create a login component
 
-Use Angular CLI to generate a new component **login**
+Use Angular CLI to generate a new component `login`
 
     ng generate component login
 
-Open **login.component.html** and copy the code below.
+Open `login.component.html` and copy the code below.
 ```html
     <div class="header width-full pt-5">
         <div class="container clearfix width-full text-center">
@@ -492,7 +494,7 @@ Open **login.component.html** and copy the code below.
         </div>
     </div>
 ```
-Add some style to our login component by opening **login.component.css** and copying the code below.
+Add some style to our login component by opening `login.component.css` and copying the code below.
 
 ```css
     .auth-form{
@@ -543,7 +545,7 @@ Create the component
 
     ng generate component register
 
-Open **register.component.html** and copy the code:
+Open `register.component.html` and copy the code:
 
 ```html
     <div class="header width-full pt-5">
@@ -593,7 +595,7 @@ Open **register.component.html** and copy the code:
     </div>
 ```
 
-Let's add some style to our **register.component.css**:
+Let's add some style to our `register.component.css`:
 
 ```css
     .reg-form{
