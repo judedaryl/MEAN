@@ -1,7 +1,7 @@
-#Creating a MEAN stack
+# Creating a MEAN stack
 MonggoDB, Express, AngularJS, NodeJS
 
-##Setting up a back-end server (Node using Express and MonggoClient)
+## Setting up a back-end server (Node using Express and MonggoClient)
 
 npm init
 name: <name>

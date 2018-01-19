@@ -1,0 +1,30 @@
+{
+  "name": "mean",
+  "version": "1.0.0",
+  "description": "mean stack",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/judedaryl/MEAN.git"
+  },
+  "keywords": [
+    "MonggoDB",
+    "Express",
+    "AngularJS",
+    "NodeJS"
+  ],
+  "author": "DLC",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/judedaryl/MEAN/issues"
+  },
+  "homepage": "https://github.com/judedaryl/MEAN#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "mongodb": "^2.2.19"
+  }
+}
