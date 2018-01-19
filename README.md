@@ -64,7 +64,7 @@ Once you have an account and a MongoDB database, *add a user* to the database wi
 *username* and *password*
 
 Then copy the URL, it's the one boxed on the image below.
-![alt text][monggodb]
+![monggodb](https://github.com/judedaryl/MEAN/tree/master/images/mongodb.png)
 
 ## CRUD routes (create, read, update and delete)
 We will be creating 5 routes, a *CREATE* route, *READ* route (read 1 and read all),
@@ -103,5 +103,4 @@ Setup *users.js* with
 Let's try creating a user
 
 [mLab]: https://mlab.com/
-[monggodb]: https://github.com/judedaryl/MEAN/tree/master/images/mongodb.png
 [postman]: https://www.getpostman.com/
