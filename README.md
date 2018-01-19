@@ -306,7 +306,320 @@ Use Postman and set the method to **Delete**, use the url "http://localhost:9090
 You now have a working NodeJS API which can process the CREATE, READ, UPDATE, and DELTE! Now let's start working on our frontend.
 
 ## Setting up our Frontend using AngularJS
-Under development....
+
+Create a new folder named **public** under the root folder, this is where we will place all front-end related stuff.
+
+    root > public
+
+Open **cmd.exe** as **administrator** and go to the public folder
+
+    cd C:\Users\<user>\mean\public
+    
+    // install angular command line
+    npm install -g @angular/cli
+
+## Create a new application
+
+Let's name our new project "homunculi"
+
+    ng new homunculi
+    
+## Try serving the application
+
+    cd homunculi
+    ng serve --open --host localhost --port 9091
+
+If ever you experience an error such as
+
+    Error: Cannot find module '@angular-devkit/core'
+    at Function.Module._resolveFilename (module.js:469:15)
+    at Function.Module._load (module.js:417:25)
+    at Module.require (module.js:497:17)
+    at require (internal/module.js:20:19)
+    at Object.<anonymous> (C:\......\node_modules\@schematics\schematics\schematic\factory.js:10:16)
+    at Module._compile (module.js:570:32)
+    at Object.Module._extensions..js (module.js:579:10)
+    at Module.load (module.js:487:32)
+    at tryModuleLoad (module.js:446:12)
+    at Function.Module._load (module.js:438:3)
+
+Just go back to the comand line, and run the following:
+
+    cd homunculi
+    npm install -g @angular-devkit/core
+
+    
+## Add semantic-ui to the application
+
+    I've been using this user interface for quite some time now, so for those who aren't yet familiar with this you can check its documentation
+    on the official [semantic-ui site].
+
+### Install Gulp
+
+Semantic UI uses gulp to build themed versions of its library.
+
+    npm install -g gulp
+
+### Install Semantic UI
+
+Semantic UI is available on npm, we will install semantic inside our assets folder so our folders will look like this
+
+    root > public > homunculi > src > assets > semantic
+
+Go back to the command line.
+
+    cd src/assets
+    npm install semantic-ui --save
+    cd semantic/
+    gulp build
+    
+Let's integrate this to our angular project.
+
+    Open root > public > homunculi > .angular-cli.json
+
+Find **"styles"** and **"scripts"** and add the following:
+
+      "styles": [
+        "styles.css",
+        "assets/semantic/dist/semantic.min.css"
+      ],
+      "scripts": [
+        "assets/semantic/dist/semantic.min.js"
+      ],
+
+
+Now that our UI is ready, let's proceed with customizing our application.
+
+## Change the application title
+
+Open the component class file ( app.component.ts ) and change the value of the **title** property to 'Homunculi'
+    
+```typescript
+    //app.component.ts
+    title = 'Homunculi';
+```
+
+Open the template file and replace the auto generated template by the Angular CLI.
+
+```html
+    <!--app.component.html-->
+    <h1>{{title}}</h1>
+```
+## Add some global styles
+
+Open **styles.css** and place the following css code:
+
+```css
+    .p-0 {
+        padding: 0 !important;
+    }
+    .px-3 {
+        padding-right: 16px !important;
+        padding-left: 16px !important;
+    }
+    .mt-3 {
+        margin-top: 16px !important;
+    }
+    .pt-5 {
+        padding-top: 32px !important;
+    }
+    .pb-4 {
+        padding-bottom: 24px !important;
+    }
+    .width-full{
+        width: 100% !important;
+    }
+    .text-center{
+        text-align: center !important;
+    }
+    .secondary.pointing.menu.toc.item {
+        display: none;
+    }
+```
+## Create a home component
+
+Use Angular CLI to generate a new component **home**
+
+    ng generate component home
+
+The CLI will create a new folder, **src/app/home** and generate three files. Open **home.component.html** and copy the code below.
+
+```html
+    <div class="ui text container">
+        <h1 class="ui inverted header">
+            {{title}}
+        </h1>
+        <h2>Do whatever you want when you want to.</h2>
+        <div class="ui huge primary button">Get Started <i class="right arrow icon"></i></div>
+    </div>
+```
+## Create a login component
+
+Use Angular CLI to generate a new component **login**
+
+    ng generate component login
+
+Open **login.component.html** and copy the code below.
+```html
+    <div class="header width-full pt-5">
+        <div class="container clearfix width-full text-center">
+        <img src="assets/images/ouroboros.png" width="100px">
+        </div>
+    </div>
+    <div class="ui container">
+        <div class="auth-form px-3">
+            <form class="ui form">
+            <div class="auth-form-header p-0">
+                <h1 class="inverted">Sign in to {{title}}</h1>
+            </div>
+            <div class="auth-form-body mt-3">
+                <div class="field">
+                    <label>First Name</label>
+                    <input type="text" name="first-name" placeholder="First Name"/>
+                    </div>
+                    <div class="field">
+                    <label>Last Name</label>
+                    <input type="text" name="last-name" placeholder="Last Name"/>
+                    </div>
+                    <button class="ui primary button mt-3">
+                    Sign In
+                    </button>
+                </div>
+            </form>
+            <p class="mt-3 register-callout">
+            New to Homunculi? <a href=#>Create an account.</a>
+            </p>
+        </div>
+    </div>
+```
+Add some style to our login component by opening **login.component.css** and copying the code below.
+
+```css
+    .auth-form{
+        width:340px;
+        margin: 0 auto 0 auto;
+    }
+
+    .auth-form-header {
+        margin-bottom: 15px;
+        color: #333;
+        text-align: center;
+        text-shadow: none;
+        background-color: transparent;
+        border: 0;
+    }
+
+    .auth-form-header h1{
+        font-size: 24px;
+        color: white;
+        font-weight: 300;
+        letter-spacing:  -0.5px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    }
+
+    .auth-form-body {
+        padding: 20px;
+        font-size: 14px;
+        background-color: #fff;
+        border: 1px solid #d8dee2;
+        border-radius: 4px;
+    }
+
+    .auth-form-body button{
+        width: -webkit-fill-available;
+    }
+
+    .register-callout {
+        padding: 15px 20px 15px 20px;
+        text-align: center;
+        border: 1px solid #d8dee2;
+        border-radius: 5px;
+    }
+```
+
+## Create a register component
+
+Create the component
+
+    ng generate component register
+
+Open **register.component.html** and copy the code:
+
+```html
+    <div class="header width-full pt-5">
+        <div class="container clearfix width-full text-center">
+        <img src="assets/images/ouroboros.png" width="100px">
+        </div>
+    </div>
+
+    <div class="ui container reg-form mt-3">
+    <div class="ui vertical segment">
+        <h1 class="ui huge header">
+        Be a Homunculus
+        <div class="sub header">Join the league of esteemed Developers</div>
+        </h1>
+    </div>
+
+    <div class="ui">
+        <div class="reg-form-container">
+            <form class="ui form">
+                <h2 class="f2-light mb-1">
+                Create your own account
+                </h2>
+                <dl class="form-group">
+                    <div class="field">
+                        <label>Display name</label>
+                        <input type="text" name="display-name" placeholder="Display Name">
+                        <p class="note">This will be the name displayed on your profile.</p>
+                    </div>
+                    <div class="field">
+                        <label>Email address</label>
+                        <input type="text" name="email" placeholder="Email@email.com">
+                        <p class="note">Your email will be used for logging in. We're keeping this
+                        to ourselves.
+                        </p>
+                    </div>
+                    <div class="field">
+                        <label>Password</label>
+                        <input type="password" name="password" placeholder="Password">
+                        <p class="note">Use at least one lowercase letter and seven characters.</p>
+                        </div>
+        
+                    <button class="ui button primary mt-3" type="submit">Register</button>
+                </dl>
+            </form>
+            </div>
+    </div>
+    </div>
+```
+
+Let's add some style to our **register.component.css**:
+
+```css
+    .reg-form{
+        width:400px;
+        padding: 10px 20px 10px 20px;
+        border: 1px solid #d8dee2;
+        border-radius: 5px;
+        margin: 0 auto 0 auto;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        background: white;
+    }
+
+    .f2-light{
+        font-size: 22px !important;
+        font-weight: 300 !important;
+        color: #333;
+    }
+
+    .note {
+        min-height: 17px;
+        margin: 4px 0 2px 0;
+        font-size: 12px;
+        color: #333;        
+    }
+``` 
+
 
 [node]: https://docs.npmjs.com/getting-started/installing-node
 [mLab]: https://mlab.com/
@@ -319,3 +632,5 @@ Under development....
 [update-all]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/update-all.png
 [update-email]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/update-email.png
 [delete]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/delete.png
+
+[semantic-ui site]: https://semantic-ui.com/introduction/getting-started.html

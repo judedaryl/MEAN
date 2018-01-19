@@ -1,0 +1,31 @@
+.p-0 {
+    padding: 0 !important;
+}
+
+.px-3 {
+    padding-right: 16px !important;
+    padding-left: 16px !important;
+}
+
+.mt-3 {
+    margin-top: 16px !important;
+}
+
+.pt-5 {
+    padding-top: 32px !important;
+}
+
+.pb-4 {
+    padding-bottom: 24px !important;
+}
+
+.width-full{
+    width: 100% !important;
+}
+
+.text-center{
+    text-align: center !important;
+}
+.secondary.pointing.menu.toc.item {
+    display: none;
+}
