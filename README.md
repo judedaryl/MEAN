@@ -63,8 +63,8 @@ The fastest and easiest way to setup a Mongo database is by using [mLab].
 Once you have an account and a MongoDB database, *add a user* to the database with a
 *username* and *password*
 
-Then grab the URL
-[monggodb]
+Then copy the URL, it's the one boxed on the image below.
+![alt text][monggodb]
 
 ## CRUD routes (create, read, update and delete)
 We will be creating 5 routes, a *CREATE* route, *READ* route (read 1 and read all),
