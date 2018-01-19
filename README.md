@@ -6,7 +6,7 @@ have trouble with the code, you can check the codes in the folders inside this g
 
 ## Setting up a back-end server (Node using Express and MongoClient)
 
-### Getting our node and express working
+## Getting our node and express working
 In a new directory, run npm init together with the following prompts.
 
     npm init
@@ -60,7 +60,7 @@ You should see 'Listening to port: 9090' in the terminal.
 
 Congrats! You have a running server. It doesn't do much now, but it will later on.
 
-### Setting up our MongoDB
+## Setting up our MongoDB
 
 The fastest and easiest way to setup a Mongo database is by using [mLab].
 
@@ -89,14 +89,14 @@ Let's declare this with our **server.js**
 Note that we've only declared this in our **server.js**, we will be listening to our
 port and sending the received data to our **MongoDB** later on.
 
-### CRUD routes (create, read, update and delete)
+## CRUD routes (create, read, update and delete)
 We will be creating 5 routes, a *CREATE* route, *READ* route (read 1 and read all),
 *UPDATE* route, and *DELETE* route.
 
 This will give you an idea on how to structure any basic route with _Node_.
 To test our routes, install [Postman].
 
-#### Organizing routes
+### Organizing routes
 For good readability and to make our app more manageable, it's best practice to organize our
 work by creating separate folders and files for our routes and other components.
 
@@ -122,7 +122,7 @@ Setup *users.js* with
     };
 ```
 
-#### Linking our server.js to our MongoDB
+### Linking our server.js to our MongoDB
 Now that we have our route files setup, let's change our **server.js** file
 
 Remove
@@ -147,7 +147,7 @@ Replace with
     })
 ```
 
-##### CREATE route
+### CREATE route
 Setup a create route in *users.js*. Note that this is using a **POST** method
 
 ```javascript
@@ -182,7 +182,7 @@ Your Postman windows should look like this
 MongoDB auto generates a **unique id** for each entry, now take note of the _id, in my case its **5a61b7290d86151900527bc6**. We will
 be using this in the next route.
 
-##### READ route 
+### READ route 
 For this example, we will be retrieving a user using the unique ID. This
 ID is a mongoDB objectID. 
 
@@ -191,7 +191,7 @@ Add this on the top portion of *users.js*
     var objectid = require('mongodb').ObjectID;
 ```
 
-###### READ single entry
+### READ route (Single entry)
 Setup a read route in *users.js* just below our create route. Note that this is using a **GET** method.
 ```javascript
     app.get('/users/:id', (req,res) =>{
@@ -203,7 +203,13 @@ Setup a read route in *users.js* just below our create route. Note that this is 
         })
     });
 ```
-###### READ all entries
+
+Let's try this using Postman. Use the _id you created from the **CREATE** route, for me _id is **5a61b7290d86151900527bc6**.
+In your Postman, don't forget to set the method to **GET** and use "http://localhost:9090/users/<_id>".
+![read-one]
+
+
+### READ route (All entries)
 Add this code below the read single entry route.
 ```javascript
     app.get('/users',(req,res) =>{
@@ -213,33 +219,95 @@ Add this code below the read single entry route.
         });
     });
 ```
-You can test this again using postman, using **GET** method and the url "http://localhost:9090/users/<id>"
-and "http://localhost:9090/users"
- 
+You can test this again using postman, using **GET** method and the url "http://localhost:9090/users"
+![read-all]
 
-##### UPDATE route
-This route shares a lot of similarity to the **CREATE** route, place this code below the *read* routes.
+### UPDATE route (Updating all fields)
+This route shares the characteristic of both the **CREATE** route and the **READ** route, place this code below the *read* routes.
 Note that this is using a **PUT** method.
 
 ```javascript
-    --app.get('/users', (req, res) => {
-    ++**app.put('/users', (req, res) => {**
-        //Place parameters inside a JSON structure
-        const userdetails = { email: req.body.email, password: req.body.password }
-        
+    app.put('/users/:id', (req, res) => {
+        const id = req.params.id;
+        const userdetails = { email: req.body.email, password: req.body.password };
+        const details = {'_id': new objectid(id) };     
         //Connect to our database        
-            -- db.collection('users').insert(userdetails, (err,results) => {
-            ++ db.collection('users').update(userdetails, (err,results) => {
+            db.collection('users').update(userdetails, (err,results) => {
                 if(err) res.send(error);
-                else res.send(results.ops[0]);
-            });      
+                else res.send(userdetails);
+            });
 
         //Lets display this on our server console.
         console.log(userdetails)
     });
 ``` 
+
+Let's try to update the user we used earlier. Using Postman set the method to **PUT** and use the url "http://localhost:9090/users/<_id>".
+Don't forget to fill-up the **Body** > **x-www-form-urlencoded** with a new set of user details.
+![update-all]
+
+### UPDATE route (Updating a specific field)
+The route above will update all data with respect to the **_id** provided. And this is not what happens in most cases, when updating
+data we usually update a portion leaving the rest of it untouched. The code for this is the same for the above but we will be using the 
+**$set** operator. We will also change our route, so that it's unique. 
+
+For this example we will only be updating the email field of the user we used earlier.
+
+```javascript
+    //app.put('/users/:id', (req, res) => {
+    app.put('/users/email/:id', (req, res) => {
+        const id = req.params.id;
+        //const userdetails = { email: req.body.email, password: req.body.password }
+        const userdetails = { $set:{ email: req.body.email } };
+        const details = {'_id': new objectid(id) };     
+        //Connect to our database        
+            db.collection('users').update(userdetails, (err,results) => {
+                if(err) res.send(error);
+                else res.send(userdetails);
+            });
+
+        //Lets display this on our server console.
+        console.log(userdetails)
+    });
+``` 
+Using Postman set the method to **PUT** and use the url "http://localhost:9090/users/<_id>".
+Fill up the email field of **Body** > **x-www-form-urlencoded** with new details and disable the password field (Although this won't matter
+since our route only processes the email portion of the data).
+![update-email]
+
+### DELETE route
+Deleting an entry shares the characteristics as finding one, place this below the **UPDATE** route.
+
+```javascript
+    app.delete('/users/:id', (req, res) => {
+        //Place parameters inside a JSON structure
+        const id = req.params.id;
+        const details = {'_id': new objectid(id) };
+        //Connect to our database        
+            db.collection('users').remove(details, (err,results) => {
+                if(err) res.send(error);
+                else res.send('Deleted user with id: '+id);
+            });      
+        console.log('Deleted user with id: '+id);
+    });
+``` 
+Finally, let's try getting rid of the user with the _id we used for all the other routes.
+Use Postman and set the method to **Delete**, use the url "http://localhost:9090/users/<_id>".
+![delete]
+
+## Backend Complete!
+You now have a working NodeJS API which can process the CREATE, READ, UPDATE, and DELTE! Now let's start working on our frontend.
+
+## Setting up our Frontend using AngularJS
+Under development....
+
 [mLab]: https://mlab.com/
 [Postman]: https://www.getpostman.com/
 
 [mongodb]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/mongodb.png
 [create]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/create.png
+[read-one]::https://raw.githubusercontent.com/judedaryl/MEAN/master/images/read-one.png
+[read-all]::https://raw.githubusercontent.com/judedaryl/MEAN/master/images/read-all.png
+[update-all]::https://raw.githubusercontent.com/judedaryl/MEAN/master/images/update-all.png
+[update-email]::https://raw.githubusercontent.com/judedaryl/MEAN/master/images/update-email.png
+[delete]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/delete.png
