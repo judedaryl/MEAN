@@ -64,7 +64,7 @@ Once you have an account and a MongoDB database, *add a user* to the database wi
 *username* and *password*
 
 Then copy the URL, it's the one boxed on the image below.
-![monggodb](https://github.com/judedaryl/MEAN/tree/master/images/mongodb.png)
+![Image of Yaktocat](https://octodex.github.com/images/yaktocat.png)
 
 ## CRUD routes (create, read, update and delete)
 We will be creating 5 routes, a *CREATE* route, *READ* route (read 1 and read all),
