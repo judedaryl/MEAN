@@ -243,6 +243,7 @@ Note that this is using a **PUT** method.
 
 Let's try to update the user we used earlier. Using Postman set the method to **PUT** and use the url "http://localhost:9090/users/<_id>".
 Don't forget to fill-up the **Body** > **x-www-form-urlencoded** with a new set of user details.
+
 ![update-all]
 
 ## UPDATE route (Updating a specific field)
