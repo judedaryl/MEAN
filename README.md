@@ -218,6 +218,7 @@ Add this code below the read single entry route.
     });
 ```
 You can test this again using postman, using **GET** method and the url "http://localhost:9090/users"
+
 ![read-all]
 
 ## UPDATE route (Updating all fields)
@@ -243,6 +244,7 @@ Note that this is using a **PUT** method.
 
 Let's try to update the user we used earlier. Using Postman set the method to **PUT** and use the url "http://localhost:9090/users/<_id>".
 Don't forget to fill-up the **Body** > **x-www-form-urlencoded** with a new set of user details.
+
 
 ![update-all]
 
@@ -274,6 +276,7 @@ For this example we will only be updating the email field of the user we used ea
 Using Postman set the method to **PUT** and use the url "http://localhost:9090/users/<_id>".
 Fill up the email field of **Body** > **x-www-form-urlencoded** with new details and disable the password field (Although this won't matter
 since our route only processes the email portion of the data).
+
 ![update-email]
 
 ## DELETE route
@@ -295,6 +298,7 @@ Deleting an entry shares the characteristics as finding one, place this below th
 ``` 
 Finally, let's try getting rid of the user with the _id we used for all the other routes.
 Use Postman and set the method to **Delete**, use the url "http://localhost:9090/users/<_id>".
+
 ![delete]
 
 ## Backend Complete!
