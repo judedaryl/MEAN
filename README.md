@@ -1,8 +1,12 @@
 # Creating a MEAN stack
-    MongoDB, Express, AngularJS, NodeJS
+MongoDB, Express, AngularJS, NodeJS
+
+This will be a step-by-step walkthrough with explanation and codes. No worries if you 
+have trouble with the code, the final codes are posted below.
 
 ## Setting up a back-end server (Node using Express and MongoClient)
 
+### Getting our node and express working
 In a new directory, run npm init together with the following prompts.
 
     npm init
@@ -46,7 +50,7 @@ Let's use 9090 as our port.
     //server.js
     const port = 9090;
 
-    app.use(bodyParser.urlencoded)({extended:true});
+    app.use(bodyParser.urlencoded({extended:true}));
     app.listen(port, () =>{
         console.log('Listening to port: '+port);
     })
@@ -56,7 +60,7 @@ You should see 'Listening to port: 9090' in the terminal.
 
 Congrats! You have a running server. It doesn't do much now, but it will later on.
 
-## Setting up our MongoDB
+### Setting up our MongoDB
 
 The fastest and easiest way to setup a Mongo database is by using [mLab].
 
@@ -64,16 +68,35 @@ Once you have an account and a MongoDB database, *add a user* to the database wi
 *username* and *password*
 
 Then copy the URL, it's the one boxed on the image below.
-![mongodb](https://raw.githubusercontent.com/judedaryl/MEAN/master/images/mongodb.png)
+![mongodb]
 
-## CRUD routes (create, read, update and delete)
+Add a *config* directory in our root folder and create a *db.js* file.
+    
+    root > config > db.js
+
+Inside, add the URL of our database.
+
+```javascript
+    module.exports = {
+        url : '<monggodb_url>'
+    }
+```
+Let's declare this with our **server.js**
+```javascript
+    const db             = require('./config/db');
+```
+
+Note that we've only declared this in our **server.js**, we will be listening to our
+port and sending the received data to our **MongoDB** later on.
+
+### CRUD routes (create, read, update and delete)
 We will be creating 5 routes, a *CREATE* route, *READ* route (read 1 and read all),
 *UPDATE* route, and *DELETE* route.
 
 This will give you an idea on how to structure any basic route with _Node_.
-To test our routes, install [postman].
+To test our routes, install [Postman].
 
-### Organizing routes
+#### Organizing routes
 For good readability and to make our app more manageable, it's best practice to organize our
 work by creating separate folders and files for our routes and other components.
 
@@ -99,8 +122,69 @@ Setup *users.js* with
     };
 ```
 
-### Create route
-Let's try creating a user
+#### Linking our server.js to our MongoDB
+Now that we have our route files setup, let's change our **server.js** file
+
+Remove
+
+```javascript
+    //server.js
+    app.listen(port, () =>{
+        console.log('Listening to port: '+port);
+    })
+```
+
+Replace with
+
+```javascript
+    //server.js
+    MongoClient.connect(db.url, (err, database) => {
+        if (err) return console.log(err)
+        require('./app/routes')(app, database);
+        app.listen(port, () => {
+            console.log('Listening to port: '+port);
+        });               
+    })
+```
+
+##### CREATE route
+Setup a create route in *users.js*
+
+```javascript
+    //users.js
+    const error = { 'error': 'An error occurred' };
+    module.exports = function(app, db) {
+
+        app.post('/users', (req, res) => {
+            //Place parameters inside a JSON structure
+            const userdetails = { email: req.body.email, password: req.body.password }
+            
+            //Connect to our database        
+                db.collection('users').insert(userdetails, (err,results) => {
+                    if(err) res.send(error);
+                    else res.send(results.ops[0]);
+                });      
+
+            //Lets display this on our server console.
+            console.log(userdetails)
+        });
+
+    };
+```
+
+Let's test! Run your server using *npm run dev*
+Test this using **Postman**. Send a x-www-form-urlencoded POST request with
+a *username* and *password* set under the *Body* tab.
+
+Your Postman windows should look like this
+![create]
+
+You should also see the corresponding information in your console
+![create-console]
 
 [mLab]: https://mlab.com/
-[postman]: https://www.getpostman.com/
+[Postman]: https://www.getpostman.com/
+
+[mongodb]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/mongodb.png
+[create]: (https://raw.githubusercontent.com/judedaryl/MEAN/master/images/create.png)
+[create-console]: (https://raw.githubusercontent.com/judedaryl/MEAN/master/images/create-console.png)
