@@ -7,6 +7,7 @@ have trouble with the code, you can check the codes in the folders inside this g
 ## Setting up a back-end server (Node using Express and MongoClient)
 
 ## Getting our node and express working
+Install [node].
 In a new directory, run npm init together with the following prompts.
 
     npm init
@@ -307,6 +308,7 @@ You now have a working NodeJS API which can process the CREATE, READ, UPDATE, an
 ## Setting up our Frontend using AngularJS
 Under development....
 
+[node]: https://docs.npmjs.com/getting-started/installing-node
 [mLab]: https://mlab.com/
 [Postman]: https://www.getpostman.com/
 
