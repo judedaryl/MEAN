@@ -1,4 +1,5 @@
 //users.js
+var objectid = require('mongodb').ObjectID;
 const error = { 'error': 'An error occurred' };
 module.exports = function(app, db) {
 
@@ -14,6 +15,23 @@ module.exports = function(app, db) {
 
         //Lets display this on our server console.
         console.log(userdetails)
+    });
+
+    
+    app.get('/users/:id', (req,res) =>{
+        const id = req.params.id;
+        const details = {'_id': new objectid(id) };
+        db.collection('users').findOne(details, (err,item)=>{
+            if(err) res.send(error);
+            else res.send(item);
+        })
+    });
+
+    app.get('/users',(req,res) =>{
+        db.collection('users').find().toArray(function(err,items){
+            if(err) res.send(error);
+            else res.send(items);
+        });
     });
 
 };

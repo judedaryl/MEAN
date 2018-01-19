@@ -2,7 +2,7 @@
 MongoDB, Express, AngularJS, NodeJS
 
 This will be a step-by-step walkthrough with explanation and codes. No worries if you 
-have trouble with the code, the final codes are posted below.
+have trouble with the code, you can check the codes in the folders inside this git.
 
 ## Setting up a back-end server (Node using Express and MongoClient)
 
@@ -148,7 +148,7 @@ Replace with
 ```
 
 ##### CREATE route
-Setup a create route in *users.js*
+Setup a create route in *users.js*. Note that this is using a **POST** method
 
 ```javascript
     //users.js
@@ -178,12 +178,68 @@ a **email** and **password** set under the **Body** tab.
 Your Postman windows should look like this
     ![create]
 
-You should also see the corresponding information in your console
-    ![create-console]
 
+MongoDB auto generates a **unique id** for each entry, now take note of the _id, in my case its **5a61b7290d86151900527bc6**. We will
+be using this in the next route.
+
+##### READ route 
+For this example, we will be retrieving a user using the unique ID. This
+ID is a mongoDB objectID. 
+
+Add this on the top portion of *users.js*
+```javascript
+    var objectid = require('mongodb').ObjectID;
+```
+
+###### READ single entry
+Setup a read route in *users.js* just below our create route. Note that this is using a **GET** method.
+```javascript
+    app.get('/users/:id', (req,res) =>{
+        const id = req.params.id;
+        const details = {'_id': new objectid(id) };
+        db.collection('users').findOne(details, (err,item)=>{
+            if(err) res.send(error);
+            else res.send(item);
+        })
+    });
+```
+###### READ all entries
+Add this code below the read single entry route.
+```javascript
+    app.get('/users',(req,res) =>{
+        db.collection('users').find().toArray(function(err,items){
+            if(err) res.send(error);
+            else res.send(items);
+        });
+    });
+```
+You can test this again using postman, using **GET** method and the url "http://localhost:9090/users/<id>"
+and "http://localhost:9090/users"
+ 
+
+##### UPDATE route
+This route shares a lot of similarity to the **CREATE** route, place this code below the *read* routes.
+Note that this is using a **PUT** method.
+
+```javascript
+    --app.get('/users', (req, res) => {
+    ++**app.put('/users', (req, res) => {**
+        //Place parameters inside a JSON structure
+        const userdetails = { email: req.body.email, password: req.body.password }
+        
+        //Connect to our database        
+            -- db.collection('users').insert(userdetails, (err,results) => {
+            ++ db.collection('users').update(userdetails, (err,results) => {
+                if(err) res.send(error);
+                else res.send(results.ops[0]);
+            });      
+
+        //Lets display this on our server console.
+        console.log(userdetails)
+    });
+``` 
 [mLab]: https://mlab.com/
 [Postman]: https://www.getpostman.com/
 
 [mongodb]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/mongodb.png
 [create]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/create.png
-[create-console]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/create-console.png
