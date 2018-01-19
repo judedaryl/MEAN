@@ -186,5 +186,5 @@ You should also see the corresponding information in your console
 [Postman]: https://www.getpostman.com/
 
 [mongodb]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/mongodb.png
-[create]: (https://raw.githubusercontent.com/judedaryl/MEAN/master/images/create.png)
-[create-console]: (https://raw.githubusercontent.com/judedaryl/MEAN/master/images/create-console.png)
+[create]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/create.png
+[create-console]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/create-console.png
