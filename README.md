@@ -91,12 +91,10 @@ port and sending the received data to our **MongoDB** later on.
 
 ## CRUD routes (create, read, update and delete)
 We will be creating 5 routes, a *CREATE* route, *READ* route (read 1 and read all),
-*UPDATE* route, and *DELETE* route.
-
-This will give you an idea on how to structure any basic route with _Node_.
+*UPDATE* route, and *DELETE* route. This will give you an idea on how to structure any basic route with _Node_.
 To test our routes, install [Postman].
 
-### Organizing routes
+## Organizing routes
 For good readability and to make our app more manageable, it's best practice to organize our
 work by creating separate folders and files for our routes and other components.
 
@@ -122,7 +120,7 @@ Setup *users.js* with
     };
 ```
 
-### Linking our server.js to our MongoDB
+## Linking our server.js to our MongoDB
 Now that we have our route files setup, let's change our **server.js** file
 
 Remove
@@ -147,7 +145,7 @@ Replace with
     })
 ```
 
-### CREATE route
+## CREATE route
 Setup a create route in *users.js*. Note that this is using a **POST** method
 
 ```javascript
@@ -173,27 +171,26 @@ Setup a create route in *users.js*. Note that this is using a **POST** method
 ```
 
 Let's test! Run your server using **npm run dev** and est this using **Postman**. Send a x-www-form-urlencoded POST request with
-a **email** and **password** set under the **Body** tab.
-
-Your Postman windows should look like this
-    ![create]
+a **email** and **password** set under the **Body** tab. Your Postman windows should look like this:
+![create]
 
 
 MongoDB auto generates a **unique id** for each entry, now take note of the _id, in my case its **5a61b7290d86151900527bc6**. We will
 be using this in the next route.
 
-### READ route 
+## READ route 
 For this example, we will be retrieving a user using the unique ID. This
 ID is a mongoDB objectID. 
 
-Add this on the top portion of *users.js*
+Add this on the top portion of **users.js**
 ```javascript
     var objectid = require('mongodb').ObjectID;
 ```
 
-### READ route (Single entry)
-Setup a read route in *users.js* just below our create route. Note that this is using a **GET** method.
+## READ route (Single entry)
+Setup a read route in **users.js** just below our create route. Note that this is using a **GET** method.
 ```javascript
+    //users.js
     app.get('/users/:id', (req,res) =>{
         const id = req.params.id;
         const details = {'_id': new objectid(id) };
@@ -209,9 +206,10 @@ In your Postman, don't forget to set the method to **GET** and use "http://local
 ![read-one]
 
 
-### READ route (All entries)
+## READ route (All entries)
 Add this code below the read single entry route.
 ```javascript
+    //users.js
     app.get('/users',(req,res) =>{
         db.collection('users').find().toArray(function(err,items){
             if(err) res.send(error);
@@ -222,11 +220,12 @@ Add this code below the read single entry route.
 You can test this again using postman, using **GET** method and the url "http://localhost:9090/users"
 ![read-all]
 
-### UPDATE route (Updating all fields)
+## UPDATE route (Updating all fields)
 This route shares the characteristic of both the **CREATE** route and the **READ** route, place this code below the *read* routes.
 Note that this is using a **PUT** method.
 
 ```javascript
+    //users.js
     app.put('/users/:id', (req, res) => {
         const id = req.params.id;
         const userdetails = { email: req.body.email, password: req.body.password };
@@ -246,7 +245,7 @@ Let's try to update the user we used earlier. Using Postman set the method to **
 Don't forget to fill-up the **Body** > **x-www-form-urlencoded** with a new set of user details.
 ![update-all]
 
-### UPDATE route (Updating a specific field)
+## UPDATE route (Updating a specific field)
 The route above will update all data with respect to the **_id** provided. And this is not what happens in most cases, when updating
 data we usually update a portion leaving the rest of it untouched. The code for this is the same for the above but we will be using the 
 **$set** operator. We will also change our route, so that it's unique. 
@@ -254,6 +253,7 @@ data we usually update a portion leaving the rest of it untouched. The code for 
 For this example we will only be updating the email field of the user we used earlier.
 
 ```javascript
+    //users.js
     //app.put('/users/:id', (req, res) => {
     app.put('/users/email/:id', (req, res) => {
         const id = req.params.id;
@@ -275,10 +275,11 @@ Fill up the email field of **Body** > **x-www-form-urlencoded** with new details
 since our route only processes the email portion of the data).
 ![update-email]
 
-### DELETE route
+## DELETE route
 Deleting an entry shares the characteristics as finding one, place this below the **UPDATE** route.
 
 ```javascript
+    //users.js
     app.delete('/users/:id', (req, res) => {
         //Place parameters inside a JSON structure
         const id = req.params.id;
@@ -306,8 +307,8 @@ Under development....
 
 [mongodb]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/mongodb.png
 [create]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/create.png
-[read-one]::https://raw.githubusercontent.com/judedaryl/MEAN/master/images/read-one.png
-[read-all]::https://raw.githubusercontent.com/judedaryl/MEAN/master/images/read-all.png
-[update-all]::https://raw.githubusercontent.com/judedaryl/MEAN/master/images/update-all.png
-[update-email]::https://raw.githubusercontent.com/judedaryl/MEAN/master/images/update-email.png
+[read-one]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/read-one.png
+[read-all]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/read-all.png
+[update-all]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/update-all.png
+[update-email]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/update-email.png
 [delete]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/delete.png
