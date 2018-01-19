@@ -172,15 +172,14 @@ Setup a create route in *users.js*
     };
 ```
 
-Let's test! Run your server using *npm run dev*
-Test this using **Postman**. Send a x-www-form-urlencoded POST request with
-a *username* and *password* set under the *Body* tab.
+Let's test! Run your server using **npm run dev** and est this using **Postman**. Send a x-www-form-urlencoded POST request with
+a **email** and **password** set under the **Body** tab.
 
 Your Postman windows should look like this
-![create]
+    ![create]
 
 You should also see the corresponding information in your console
-![create-console]
+    ![create-console]
 
 [mLab]: https://mlab.com/
 [Postman]: https://www.getpostman.com/
