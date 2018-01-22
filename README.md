@@ -356,26 +356,15 @@ Just go back to the comand line, and run the following:
 
 I've been using this user interface for quite some time now, so for those who aren't yet familiar with this you can check its documentation on the official [semantic-ui site].
 
-### Install Gulp
+### Install the Out of the box Semantic UI
 
-Semantic UI uses gulp to build themed versions of its library.
+Semantic UI is available on npm, we will install semantic through the command line. Go back to your angular root folder. Also note that semantic ui depends on `jquery` so let's include that too.
 
-    npm install -g gulp
+    cd public/homunculi
+    npm install semantic-ui-css jquery --save
 
-### Install Semantic UI
-
-Semantic UI is available on npm, we will install semantic inside our assets folder so our folders will look like this
-
-    root > public > homunculi > src > assets > semantic
-
-Go back to the command line.
-
-    cd src/assets
-    npm install semantic-ui --save
-    cd semantic/
-    gulp build
-    
-Let's integrate this to our angular project.
+This will install the **out of the box** `semantic-ui` components that we will need inside the node_module folder of our project.
+After this installs let's go ahead and update `.angular-cli.json`
 
     Open root > public > homunculi > .angular-cli.json
 
@@ -383,10 +372,11 @@ Find `"styles"` and `"scripts"` and add the following:
 
       "styles": [
         "styles.css",
-        "assets/semantic/dist/semantic.min.css"
+        **"../node_modules/semantic-ui-css/semantic.min.css"**
       ],
       "scripts": [
-        "assets/semantic/dist/semantic.min.js"
+        **"../node_modules/jquery/dist/jquery.min.js",**
+        **"../node_modules/semantic-ui-css/semantic.min.js"**
       ],
 
 
@@ -472,16 +462,16 @@ Open `login.component.html` and copy the code below.
         <div class="auth-form px-3">
             <form class="ui form">
             <div class="auth-form-header p-0">
-                <h1 class="inverted">Sign in to {{title}}</h1>
+                <h1 class="inverted">Sign in to Homunculi</h1>
             </div>
             <div class="auth-form-body mt-3">
                 <div class="field">
-                    <label>First Name</label>
-                    <input type="text" name="first-name" placeholder="First Name"/>
+                    <label>Email address</label>
+                    <input type="text" name="email" placeholder="Email@email.com"/>
                     </div>
                     <div class="field">
-                    <label>Last Name</label>
-                    <input type="text" name="last-name" placeholder="Last Name"/>
+                    <label>Password</label>
+                    <input type="password" name="password" placeholder="Password"/>
                     </div>
                     <button class="ui primary button mt-3">
                     Sign In
@@ -621,6 +611,159 @@ Let's add some style to our `register.component.css`:
         color: #333;        
     }
 ``` 
+## Routing
+
+Now that we've finished setting up our pages let's handle the routing between them.
+
+    ng generate module app-routing --flat --module=app
+
+Open the generated file `app-routing.module.ts`. You should see something like this.
+
+```typescript
+    //app-routing.module.ts
+    import { NgModule } from '@angular/core';
+    import { CommonModule } from '@angular/common';
+
+    @NgModule({
+    imports: [
+        CommonModule
+    ],
+    declarations: []
+    })
+    export class AppRoutingModule { }
+```
+
+Let's clean this up by deleting some unnecessary code. Since we won't be using them, delete the `@NgModule.declarations` array and `CommonModule` references.
+We'll be configuring the router with `Routes` in the `RouterModule` so import those two symbols from the `@angular/router` library.
+Add an `@NgModule.exports` array with `RouterModule` in it. Exporting `RouterModule` makes router directives available for use in the `AppModule` components that will need them.
+
+`AppRoutingModule` looks like this now:
+```typescript
+    //app-routing.module.ts
+    import { NgModule } from '@angular/core';
+    import { RouterModule, Routes } from '@angular/router';
+
+    @NgModule({
+    exports: [ RouterModule ],
+    imports: [ RouterModule.forRoot(routes)]
+    })
+
+    export class AppRoutingModule {}
+```
+
+### Add some routes
+
+A typical Angular `Route` needs a `path` (string that matches url in browser address bar) and a `component` (the component the router will point to).
+
+Import our components `HomeComponent` `LoginComponent`, and `RegisterComponent`. Then define an array of routes with a single `route` to that component.
+Then initialize the `router` and start it listening for browser location changes. We can do this by Adding `RouterModule` to the `@NgModule.imports` array and configure it
+with the `routes` in one step by calling `RouterModule.forRoot()` within the `imports` array.
+
+Your `app-routing.module.ts` should look like this now.
+
+```typescript
+    //app-routing.module.ts
+    import { HomeComponent } from './home/home.component';
+    import { LoginComponent } from './login/login.component';
+    import { RegisterComponent } from './register/register.component';
+    import { NgModule } from '@angular/core';
+    import { RouterModule, Routes } from '@angular/router';
+
+    const routes: Routes = [
+    { path: 'home', component: HomeComponent },
+    { path: 'login', component: LoginComponent },
+    { path: 'register', component: RegisterComponent },
+    ];
+    @NgModule({
+    exports: [ RouterModule ],
+    imports: [ RouterModule.forRoot(routes)]
+    })
+
+    export class AppRoutingModule {}
+```
+
+### Add RouterOutlet
+
+Open `app.component.html` and place 
+
+```html 
+    <router-outlet></router-outlet>
+```
+
+### Test our routes
+
+We can test our routes by serving our application.
+
+    `ng serve --open --host localhost --port 9091`
+
+Then try navigating to our different routes `http:\\localhost:9091\home`, `http:\\localhost:9091\login`, `http:\\localhost:9091\register`.
+You should be able to see your different pages.
+
+## Binding some routes to our links
+
+## Create the User model class
+
+As users enter form data, we need to capture these changes and update an instance of a model. A model can be as simple as a "proprty bag" that holds facts
+about a thing of application importance. That describes `User` class with its three required fields (`displayname`, `email`, `password`).
+
+Using Angular CLI, generate a new class named `User`
+
+    ng generate class User
+
+With this content
+
+```typescript
+    export class User {
+
+        constructor(
+        public displayname: string,
+        public username: string,
+        public password: string,
+        ) {  }
+    }
+```
+
+## Revise app.module.ts
+
+`app.module.ts` defines the application's root module. In it you identify the external modules you'll use in the application and declare components that belong to this module,
+such as the `HeroComponent`, `LoginComponent` and `RegisterComponent`. Because template-driven forms are in their own module, you need to **add** the `FormsModule` to the array of
+`imports` for the application module before you can use forms.
+
+Update it with:
+
+```typescript
+    import { BrowserModule } from '@angular/platform-browser';
+    import { NgModule } from '@angular/core';
+    import { FormsModule } from '@angular/forms';
+
+    import { AppComponent } from './app.component';
+    import { HomeComponent } from './home/home.component';
+    import { LoginComponent } from './login/login.component';
+    import { RegisterComponent } from './register/register.component';
+    import { AppRoutingModule } from './/app-routing.module';
+
+
+    @NgModule({
+    declarations: [
+        AppComponent,
+        HomeComponent,
+        LoginComponent,
+        RegisterComponent
+    ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        FormsModule
+    ],
+    providers: [],
+    bootstrap: [AppComponent]
+    })
+    export class AppModule { }
+
+```
+    There are only two changes.
+        1. You import `FormsModule`
+        2. You add `FormsModule` to the list of imports
 
 
 [node]: https://docs.npmjs.com/getting-started/installing-node

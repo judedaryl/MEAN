@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+declare var $: any;
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -8,6 +8,15 @@ import { Component, OnInit } from '@angular/core';
 export class HomeComponent implements OnInit {
 
   constructor() { }
+
+  ShowModal(): void {
+    $('.ui.modal').modal('show');
+  }
+
+  DismissMessage(): void {
+      $('.message').closest('.message').transition('fade');
+  }
+
 
   ngOnInit() {
   }

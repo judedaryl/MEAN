@@ -1,12 +1,21 @@
 //users.js
 var objectid = require('mongodb').ObjectID;
 const error = { 'error': 'An error occurred' };
-module.exports = function(app, db) {
 
+module.exports = function(app, db) {
+    app.use(function(req, res, next) {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        next();
+      });
     //CREATE route
     app.post('/users', (req, res) => {
         //Place parameters inside a JSON structure
-        const userdetails = { email: req.body.email, password: req.body.password }
+        const userdetails = { 
+            displayname: req.body.displayname,
+            email: req.body.email, 
+            password: req.body.password 
+        }
         
         //Connect to our database        
             db.collection('users').insert(userdetails, (err,results) => {
@@ -15,6 +24,7 @@ module.exports = function(app, db) {
             });      
 
         //Lets display this on our server console.
+        console.log(req.body)
         console.log(userdetails)
     });
 
@@ -40,7 +50,11 @@ module.exports = function(app, db) {
     //UPDATE route
     app.put('/users/:id', (req, res) => {
         const id = req.params.id;
-        const userdetails = { email: req.body.email, password: req.body.password }
+        const userdetails = { 
+            displayname: req.body.displayname,
+            email: req.body.email, 
+            password: req.body.password 
+        }
         const details = {'_id': new objectid(id) };     
         //Connect to our database        
             db.collection('users').update(details, userdetails, (err,results) => {
@@ -77,7 +91,6 @@ module.exports = function(app, db) {
             });      
         console.log('Deleted user with id: '+id);
     });
-
 
 
 };
