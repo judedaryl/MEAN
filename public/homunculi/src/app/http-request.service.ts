@@ -1,50 +1,41 @@
-
-import { User } from './models/user';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
 
-const apiUrl = 'http://localhost:9090/users';
-
+const apiUrl = 'http://localhost:9090';
+declare var $: any;
 
 @Injectable()
 export class HttpRequestService {
 
-  doingsomething: boolean;
-  result: Object[];
-  constructor(private hc: HttpClient) {
-    this.result = [];
-    this.doingsomething = false;
-  }
-
-  postUser(params: HttpParams): any {
-    this.hc.get<User[]>('http://localhost:9090/users').subscribe(data => {
-      console.log(data);
-      return data.toString();
-    });
-  }
-
-  g
-
-  post(params: HttpParams): any {
-
-    this.hc.post('http://localhost:9090/users', params, {
-      headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
-    }).subscribe( data => {
-      return data.toString();
-    });
-  }
-
-  async getUsers(): Promise<any> {
-    try {
-      let response = await this.hc.get(apiUrl).toPromise();
-      return response;
-    } catch (error) {
-
+    doingsomething: boolean;
+    result: Object[];
+    constructor(private hc: HttpClient) {
+        this.result = [];
+        this.doingsomething = false;
     }
-  }
 
+    // Login service
+    async loginUser(params): Promise<any> {
+        try {
+            return await this.post(params, '/users/login');
+        } catch (error) {}
+    }
 
+    // Registration service
+    async registerUser(params): Promise<any> {
+        try {
+            return await this.post(params, '/users');
+        } catch (error) {}
+    }
 
+    async post(params, api): Promise<any> {
+        let body = new HttpParams();
+        $.each(params, function(k, v) {
+        body = body.append(k, v);
+        });
+        try {
+        return await this.hc.post(apiUrl + api, body).toPromise();
+        } catch (error) {}
+    }
 
 }

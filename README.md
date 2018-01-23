@@ -145,15 +145,35 @@ Replace with
         });               
     })
 ```
+## CORS (Cross-Origin Resource Sharing)
 
+Every browser has this security feature that secures HTTP requests. Since in this project our front-end will be using `port: 9091` running on the `host: localhost`
+we can add it to our access control-allow-origin.
+
+```javascript
+    //user.js
+    const error = { 'error': 'An error occurred' };
+
+    module.exports = function(app, db) {
+        app.use(function(req, res, next) {
+            res.header("Access-Control-Allow-Origin", "http://localhost:9091");
+            res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+            next();
+        });
+    };
+```
 ## CREATE route
-Setup a create route in *users.js*. Note that this is using a `POST` method
+Setup a create route in *users.js*. Note that this is using a `POST` method. `/users` will be the route we will be utilizing for `Registration`. Another route `/users/login` will be for `Login`. The main difference between the two is that `/users` will be **inserting** new data while `/users/login` will be **finding** the matching entry on the database with data we will be providing namely **email** and **password**.
 
 ```javascript
     //users.js
     const error = { 'error': 'An error occurred' };
     module.exports = function(app, db) {
-
+        app.use(function(req, res, next) {
+            res.header("Access-Control-Allow-Origin", "http://localhost:9091");
+            res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+            next();
+        });
         app.post('/users', (req, res) => {
             //Place parameters inside a JSON structure
             const userdetails = { email: req.body.email, password: req.body.password }
@@ -166,6 +186,16 @@ Setup a create route in *users.js*. Note that this is using a `POST` method
 
             //Lets display this on our server console.
             console.log(userdetails)
+        });
+
+        app.post('/users/login', (req,res) =>{
+            const email = req.body.email;
+            const password = req.body.password;
+            const details = {'email': email, 'password': password };
+            db.collection('users').findOne(details, (err,item)=>{
+                if(err) res.send(error);
+                else res.send(item);
+            })
         });
 
     };
@@ -518,7 +548,7 @@ Add some style to our login component by opening `login.component.css` and copyi
     }
 
     .auth-form-body button{
-        width: -webkit-fill-available;
+        width: 100%;
     }
 
     .register-callout {
@@ -673,6 +703,7 @@ Your `app-routing.module.ts` should look like this now.
     { path: 'home', component: HomeComponent },
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
+    { path: '', redirectTo: '/home', pathMatch: 'full' }
     ];
     @NgModule({
     exports: [ RouterModule ],
@@ -699,48 +730,28 @@ We can test our routes by serving our application.
 Then try navigating to our different routes `http:\\localhost:9091\home`, `http:\\localhost:9091\login`, `http:\\localhost:9091\register`.
 You should be able to see your different pages.
 
-## Binding some routes to our links
+## Adding our pages and other necessary modules to our application.
 
-## Create the User model class
+`app.module.ts` defines the application's root module. In it you identify the external modules you'll use in the application and declare components that belong to this module, such as the `HeroComponent`,`LoginComponent` and `RegisterComponent`. 
 
-As users enter form data, we need to capture these changes and update an instance of a model. A model can be as simple as a "proprty bag" that holds facts
-about a thing of application importance. That describes `User` class with its three required fields (`displayname`, `email`, `password`).
+Because template-driven forms are in their own module, you need to **add** the `FormsModule` and `ReactiveFormsModule` to the array of `imports` for the application module so that we can use forms.
 
-Using Angular CLI, generate a new class named `User`
+We will also add `HttpClientModule` to handle the HTTP requests we will be using later.
 
-    ng generate class User
-
-With this content
-
-```typescript
-    export class User {
-
-        constructor(
-        public displayname: string,
-        public username: string,
-        public password: string,
-        ) {  }
-    }
-```
-
-## Revise app.module.ts
-
-`app.module.ts` defines the application's root module. In it you identify the external modules you'll use in the application and declare components that belong to this module,
-such as the `HeroComponent`, `LoginComponent` and `RegisterComponent`. Because template-driven forms are in their own module, you need to **add** the `FormsModule` to the array of
-`imports` for the application module before you can use forms.
-
-Update it with:
+Update it `app.module.ts` with:
 
 ```typescript
     import { BrowserModule } from '@angular/platform-browser';
     import { NgModule } from '@angular/core';
-    import { FormsModule } from '@angular/forms';
+    import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+    import { HttpClientModule } from '@angular/common/http';
 
     import { AppComponent } from './app.component';
     import { HomeComponent } from './home/home.component';
     import { LoginComponent } from './login/login.component';
     import { RegisterComponent } from './register/register.component';
     import { AppRoutingModule } from './/app-routing.module';
+    import { HttpRequestService } from './http-request.service';
 
 
     @NgModule({
@@ -753,19 +764,119 @@ Update it with:
     imports: [
         BrowserModule,
         AppRoutingModule,
-        FormsModule
+        FormsModule,
+        ReactiveFormsModule,
+        HttpClientModule
     ],
-    providers: [],
+    providers: [HttpRequestService],
     bootstrap: [AppComponent]
     })
     export class AppModule { }
 
 ```
-    There are only two changes.
-        1. You import `FormsModule`
-        2. You add `FormsModule` to the list of imports
 
+# Communication between front-end and back-end
 
+Now that we have our pages and our serving running, let's try to send some form data from our `register` module to our server's `CREATE` api.
+
+## Creating a HTTP service.
+
+Create the service using `AngularCLI`
+
+    ng generate service http-request
+
+Using the `AngularCLI`, our service will automatically be registered in our `app.module.ts` so we don't have to worry about that any more. 
+
+Let's cover the basics first, we will create a `Login method`, `Register method` and a generic `Post method` in our `http-request service`. To do this we will be using `angular's HttpClient module` we included earlier.
+
+Open `http-request.service.ts` and add the code below:
+
+```typescript
+    import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
+    import { Injectable } from '@angular/core';
+
+    const apiUrl = 'http://localhost:9090';
+    declare var $: any;
+
+    @Injectable()
+    export class HttpRequestService {
+
+        doingsomething: boolean;
+        result: Object[];
+        constructor(private hc: HttpClient) {
+            this.result = [];
+            this.doingsomething = false;
+        }
+
+        // Login service
+        async loginUser(params): Promise<any> {
+            try {
+                return await this.post(params,'/users/login');
+            } catch (error) {}
+        }
+
+        // Registration service
+        async registerUser(params): Promise<any> {
+            try {
+                return await this.post(params,'/users');
+            } catch (error) {}
+        }
+
+        async post(params, api): Promise<any> {
+            let body = new HttpParams();
+            $.each(params, function(k, v) {
+            body = body.append(k, v);
+            });
+            try {
+            return await this.hc.post(apiUrl + api, body).toPromise();
+            } catch (error) {}
+        }
+
+    }
+```
+## Setting up our registration form.
+
+Let's start by opening `register.component.ts`. Here we will see the default boiler text setup by the `AngularCLI` when we made the register component. Since we will be using forms module, import the following to the file.
+
+```typescript
+    //register.component.ts
+    import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+```
+
+Let's create a `FormGroup` with the name `registrationForm` inside the **class**, and use `FormBuilder` to create the form for us with the necessary data we need to register a user namely the **Display name**, **Email Address**, and **Password**. We can do this by creating a method that we will name **generateForm()** and call this method in our class' `constructor`.
+
+```typescript
+    //register.component.ts
+    export class RegisterComponent implements OnInit {
+
+        registrationForm: FormGroup;
+
+        ngOnInit() {
+
+        }
+        constructor(private builder: FormBuilder) {
+            this.generateForm();
+        }
+
+        generateForm() {
+    this.registrationForm = this.builder.group({
+      displayname: ['', [Validators.minLength(4) , Validators.required] ],
+      email: '',
+      password: ['', [Validators.minLength(8) , Validators.required] ]
+    });
+        }
+    }   
+```
+`registrationForm` is our `FormGroup` while it's contents `displayname`, `email`, and `password` are our `FormControl`. The `FormControl` can also act the same way as models which have **bindings** with our application. To see this in action we can add a `get livedata` method and call this in our template page.
+
+```typescript
+    //register.component.ts
+    get livedata() { return this.registrationForm.value; }
+```
+
+```html
+    //register.component.html
+```
 [node]: https://docs.npmjs.com/getting-started/installing-node
 [mLab]: https://mlab.com/
 [Postman]: https://www.getpostman.com/

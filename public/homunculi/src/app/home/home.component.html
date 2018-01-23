@@ -1,55 +1,7 @@
-<div class="ui fixed inverted segment">
-        <div class="ui inverted secondary pointing menu">
-          <a class="active item" href="#">
-            Home
-          </a>
-          <a class="item">
-            Messages
-          </a>
-          <a class="item">
-            Friends
-          </a>
-        </div>
-</div>
 <div class="ui text container">
-    <h1 class="ui inverted header">
-        {{title}}
-    </h1>
-    <h2>Do whatever you want when you want to.</h2>
-    <button class="ui huge primary button" (click)='ShowModal()'>Get Started <i class="right arrow icon"></i></button>
-
-    <div class="ui negative message">
-            <i class="close icon" (click)='DismissMessage()' ></i>
-            <div class="header">
-              Fail boiasd
-            </div>
-            <p>Expire boi</p>
-          </div>
-          
+  <h1 class="ui inverted header">
+      {{title}}
+  </h1>
+  <h2>Do whatever you want when you want to.</h2>
+  <div class="ui huge primary button">Get Started <i class="right arrow icon"></i></div>
 </div>
-
-<div class="ui inverted vertical footer segment">
-    <div class="ui center aligned container">
-        &copy; &nbsp; Copyright 2017
-    </div>
-</div>
-
-<div class="ui basic modal">
-        <div class="ui icon header">
-          <i class="archive icon"></i>
-          Archive Old Messages
-        </div>
-        <div class="content">
-          <p>Your inbox is getting full, would you like us to enable automatic archiving of old messages?</p>
-        </div>
-        <div class="actions">
-          <div class="ui red basic cancel inverted button">
-            <i class="remove icon"></i>
-            No
-          </div>
-          <div class="ui green ok inverted button">
-            <i class="checkmark icon"></i>
-            Yes
-          </div>
-        </div>
-      </div>

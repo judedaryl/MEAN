@@ -4,7 +4,7 @@ const error = { 'error': 'An error occurred' };
 
 module.exports = function(app, db) {
     app.use(function(req, res, next) {
-        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Origin", "http://localhost:9091");
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         next();
       });
@@ -26,6 +26,17 @@ module.exports = function(app, db) {
         //Lets display this on our server console.
         console.log(req.body)
         console.log(userdetails)
+    });
+
+    //LOGIN ROUTES
+    app.post('/users/login', (req,res) =>{
+        const email = req.body.email;
+        const password = req.body.password;
+        const details = {'email': email, 'password': password };
+        db.collection('users').findOne(details, (err,item)=>{
+            if(err) res.send(error);
+            else res.send(item);
+        })
     });
 
     //READ routes
@@ -91,6 +102,5 @@ module.exports = function(app, db) {
             });      
         console.log('Deleted user with id: '+id);
     });
-
 
 };
