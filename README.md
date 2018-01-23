@@ -824,7 +824,7 @@ Now that we have our pages and our serving running, let's try to send some form 
 
 Create the service using `AngularCLI`
 
-    ng generate service http-request
+    ng generate service http-request --module=app
 
 Using the `AngularCLI`, our service will automatically be registered in our `app.module.ts` so we don't have to worry about that any more. 
 
