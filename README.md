@@ -511,7 +511,7 @@ Open `login.component.html` and copy the code below.
 ```html
     <div class="header width-full pt-5">
         <div class="container clearfix width-full text-center">
-        <img src="assets/images/ouroboros.png" width="100px">
+        <img src="https://raw.githubusercontent.com/judedaryl/MEAN/master/public/homunculi/src/assets/images/ouroboros.png" width="100px">
         </div>
     </div>
     <div class="ui container">
@@ -639,7 +639,7 @@ Open `register.component.html` and copy the code:
         <div name="form-info" class="two">
             <div class="header pt-5">
                 <div class="container clearfix text-center">
-                <img src="assets/images/ouroboros.png" width="400px">
+                <img src="https://raw.githubusercontent.com/judedaryl/MEAN/master/public/homunculi/src/assets/images/ouroboros.png" width="400px">
                 </div>
             </div>
         </div>
@@ -1011,7 +1011,7 @@ Modify the div with `name="form-info"` with the code below.
     <div name="form-info" class="two form-info">
         <div class="header pt-5">
             <div class="container clearfix text-center centered">
-            <img src="assets/images/ouroboros.png" width="200px">
+            <img src="https://raw.githubusercontent.com/judedaryl/MEAN/master/public/homunculi/src/assets/images/ouroboros.png" width="200px">
             </div>
         </div>
         <div class="ui">
