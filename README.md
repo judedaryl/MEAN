@@ -67,7 +67,7 @@ The fastest and easiest way to setup a Mongo database is by using [mLab].
 
 Once you have an account and a MongoDB database, **add a user** to the database with a **username** and **password**
 Then copy the URL, it's the one boxed on the image below.
-![mongodb]
+![mongodb_]
 
 Add a *config* directory in our root folder and create a `db.js` file.
     
@@ -1156,7 +1156,7 @@ If errors occur this will be shown on the right side of our page. However if reg
 [Angular]: https://angular.io
 [Node.js]: https://nodejs.org
 
-[mongodb]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/mongodb.png
+[mongodb_]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/mongodb.png
 [create]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/create.png
 [read-one]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/read-one.png
 [read-all]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/read-all.png
