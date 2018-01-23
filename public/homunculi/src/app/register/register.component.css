@@ -20,3 +20,21 @@
     font-size: 12px;
     color: #333;        
 }
+
+.form-info{
+    width: 300px !important;
+}
+
+.ng-valid[required], .ng-valid.required input {
+    border: 1px solid #42A948 !important; /* green */
+}
+.ng-invalid.ng-dirty:not(form) {
+    border: 1px solid #a94442 !important; /* red */ 
+}
+.ui.form .warning.message, .ui.form {
+display: block;
+}  
+.ui.input.error input { 
+    background-color: #fff6f6 !important; 
+    border-color: #e0b4b4 !important; 
+}

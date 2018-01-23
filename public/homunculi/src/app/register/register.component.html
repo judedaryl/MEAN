@@ -1,46 +1,77 @@
-<div class="header width-full pt-5">
-  <div class="container clearfix width-full text-center">
-  <img src="assets/images/ouroboros.png" width="100px">
-  </div>
+
+<div class="ui grid two items-center">
+    <div name="form" class="two">
+        <div class="ui container reg-form mt-3">
+            <div class="ui vertical segment">
+                <h1 class="ui huge header">
+                Be a Homunculus
+                <div class="sub header">Join the league of esteemed Developers</div>
+                </h1>
+            </div>                
+            <div class="ui">
+                <div class="reg-form-container">
+                    <form class="ui form" [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+                        <h2 class="f2-light mb-1">
+                            Create your own account          
+                        </h2>
+                        <dl class="form-group">
+                            <div class="field" ng-view sp>
+                                <label>Display name</label>
+                                <input type="text" class="asd" placeholder="Display Name" formControlName="displayname" data-tooltip="Hello. This is a mini popup" data-variation="mini" data-delay="500">
+                                <p class="note">This will be the name displayed on your profile.</p>
+                            </div>
+                            
+                            <div class="field">
+                                <label>Email address</label>
+                                <input type="email" placeholder="Email@email.com" formControlName="email" email>
+                                <p class="note">Your email will be used for logging in. We're keeping this
+                                to ourselves.
+                                </p>
+                            </div>
+                            <div class="field">
+                                <label>Password</label>
+                                <input type="password" placeholder="Password" formControlName="password">
+                                <p class="note">Use at least one lowercase letter and seven characters.</p>
+                            </div>                
+                            <button class="ui button primary mt-3" type="submit" [disabled]="registrationForm.invalid">Register</button>
+                        </dl>
+                    </form>                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div name="form-info" class="two form-info">
+        <div class="header pt-5">
+            <div class="container clearfix text-center centered">
+            <img src="assets/images/ouroboros.png" width="200px">
+            </div>
+        </div>
+        <div class="ui">
+            <div *ngIf="response.haserror" class="ui warning mini message">
+                <ul class="list">
+                    <li>{{response.error}}</li>
+                </ul>
+            </div>
+            <div *ngIf="registrationForm.get('displayname').status === 'INVALID' && (registrationForm.get('displayname').dirty || registrationForm.get('displayname').touched)" class="ui warning mini message">
+                <ul class="list">
+                    <li *ngIf="registrationForm.get('displayname').errors.minlength">Display name must be 4 characters long</li>
+                    <li *ngIf="registrationForm.get('displayname').errors.required">Please input a display name</li>
+                </ul>
+            </div>
+            <div *ngIf="registrationForm.get('email').status === 'INVALID' && (registrationForm.get('email').dirty || registrationForm.get('email').touched)" class="ui warning mini message">
+                <ul class="list">
+                    <li>Please enter a valid email address.</li>
+                </ul>
+            </div>
+            <div *ngIf="registrationForm.get('password').status === 'INVALID' && (registrationForm.get('password').dirty || registrationForm.get('password').touched)" class="ui warning mini message">
+                <ul class="list">
+                    <li *ngIf="registrationForm.get('password').errors.minlength">Password must be atleast 6 characters long.</li>
+                    <li *ngIf="registrationForm.get('password').errors.required">Please input a password</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
 </div>
 
-<div class="ui container reg-form mt-3">
-<div class="ui vertical segment">
-  <h1 class="ui huge header">
-  Be a Homunculus
-  <div class="sub header">Join the league of esteemed Developers</div>
-  </h1>
-</div>
-
-<div class="ui">
-  <div class="reg-form-container">
-      <form class="ui form" [formGroup]="registrationForm">
-          <h2 class="f2-light mb-1">
-          Create your own account
-          </h2>
-          <dl class="form-group">
-              <div class="field">
-                  <label>Display name</label>
-                  <input type="text" name="display-name" placeholder="Display Name" formControlName="displayname">
-                  <p class="note">This will be the name displayed on your profile.</p>
-              </div>
-              <div class="field">
-                  <label>Email address</label>
-                  <input type="text" name="email" placeholder="Email@email.com">
-                  <p class="note">Your email will be used for logging in. We're keeping this
-                  to ourselves.
-                  </p>
-              </div>
-              <div class="field">
-                  <label>Password</label>
-                  <input type="password" name="password" placeholder="Password">
-                  <p class="note">Use at least one lowercase letter and seven characters.</p>
-                  </div>
-  
-              <button class="ui button primary mt-3" type="submit">Register</button>
-          </dl>
-      </form>
-      {{ livedata }}
-      </div>
-</div>
-</div>

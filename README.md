@@ -1,5 +1,5 @@
 # Creating a MEAN stack
-MongoDB, Express, AngularJS, NodeJS
+[MongoDB] [Express.js] [Angular] [Node.js]
 
 This will be a step-by-step walkthrough with explanation and codes. No worries if you 
 have trouble with the code, you can check the codes in the folders inside this git.
@@ -151,7 +151,7 @@ Every browser has this security feature that secures HTTP requests. Since in thi
 we can add it to our access control-allow-origin.
 
 ```javascript
-    //user.js
+    //users.js
     const error = { 'error': 'An error occurred' };
 
     module.exports = function(app, db) {
@@ -165,6 +165,8 @@ we can add it to our access control-allow-origin.
 ## CREATE route
 Setup a create route in *users.js*. Note that this is using a `POST` method. `/users` will be the route we will be utilizing for `Registration`. Another route `/users/login` will be for `Login`. The main difference between the two is that `/users` will be **inserting** new data while `/users/login` will be **finding** the matching entry on the database with data we will be providing namely **email** and **password**.
 
+Since `/users/login` is for user `Registration` it will also need to cross check if the data provided by the user exists or not. We will be adding a multi-layer checking that finds if the `email` exists or if the `displayname` exists and returns a corresponding `error` if they do.
+
 ```javascript
     //users.js
     const error = { 'error': 'An error occurred' };
@@ -174,20 +176,41 @@ Setup a create route in *users.js*. Note that this is using a `POST` method. `/u
             res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             next();
         });
+        //Registration route
         app.post('/users', (req, res) => {
-            //Place parameters inside a JSON structure
-            const userdetails = { email: req.body.email, password: req.body.password }
-            
-            //Connect to our database        
-                db.collection('users').insert(userdetails, (err,results) => {
-                    if(err) res.send(error);
-                    else res.send(results.ops[0]);
-                });      
-
-            //Lets display this on our server console.
-            console.log(userdetails)
+            const userdetails = {
+                displayname: req.body.displayname,
+                password: req.body.password,
+                email: req.body.email
+            }
+            //check if display name exists
+            db.collection('users')
+            .find( {email: req.body.displayname})
+            .toArray(function(err,item) {
+                if(err) res.send(err);
+                else {
+                    if(Object.keys(item).length != 0) res.send({exists: 'displayname'})
+                    else {
+                        //check if email exists
+                        db.collection('users')
+                        .find({displayname: req.body.email})
+                        .toArray(function(err,item){
+                            if(Object.keys(item).length != 0) res.send({exists: 'email'})
+                            else {
+                                //add new user
+                                db.collection('users')
+                                .insert(userdetails, (err,item)=>{
+                                    if(err) res.send({error: err})
+                                    else res.send({ status: 'ok', data: item['ops'] })
+                                })
+                            }
+                        })
+                    }
+                }
+                
+            })        
         });
-
+        //Login route
         app.post('/users/login', (req,res) =>{
             const email = req.body.email;
             const password = req.body.password;
@@ -202,7 +225,7 @@ Setup a create route in *users.js*. Note that this is using a `POST` method. `/u
 ```
 
 Let's test! Run your server using `npm run dev` and test this using `Postman`. Send a x-www-form-urlencoded POST request with
-a `email` and `password` set under the `Body` tab. Your Postman windows should look like this:
+a `email` and `password` set under the `Body` tab. Your Postman window should look like this:
 ![create]
 
 
@@ -457,6 +480,9 @@ Open `styles.css` and place the following css code:
     .secondary.pointing.menu.toc.item {
         display: none;
     }
+    .items-center{
+        justify-content: center !important;
+    }
 ```
 ## Create a home component
 
@@ -509,7 +535,7 @@ Open `login.component.html` and copy the code below.
                 </div>
             </form>
             <p class="mt-3 register-callout">
-            New to Homunculi? <a href=#>Create an account.</a>
+            New to Homunculi? <a>Create an account.</a>
             </p>
         </div>
     </div>
@@ -568,51 +594,59 @@ Create the component
 Open `register.component.html` and copy the code:
 
 ```html
-    <div class="header width-full pt-5">
-        <div class="container clearfix width-full text-center">
-        <img src="assets/images/ouroboros.png" width="100px">
-        </div>
-    </div>
 
-    <div class="ui container reg-form mt-3">
-    <div class="ui vertical segment">
-        <h1 class="ui huge header">
-        Be a Homunculus
-        <div class="sub header">Join the league of esteemed Developers</div>
-        </h1>
-    </div>
-
-    <div class="ui">
-        <div class="reg-form-container">
-            <form class="ui form">
-                <h2 class="f2-light mb-1">
-                Create your own account
-                </h2>
-                <dl class="form-group">
-                    <div class="field">
-                        <label>Display name</label>
-                        <input type="text" name="display-name" placeholder="Display Name">
-                        <p class="note">This will be the name displayed on your profile.</p>
+    <div class="ui grid two items-center">
+        <div name="form" class="two">
+            <div class="ui container reg-form mt-3">
+                <div class="ui vertical segment">
+                    <h1 class="ui huge header">
+                    Be a Homunculus
+                    <div class="sub header">Join the league of esteemed Developers</div>
+                    </h1>
+                </div>                
+                <div class="ui">
+                    <div class="reg-form-container">
+                        <form class="ui form">
+                            <h2 class="f2-light mb-1">
+                                Create your own account          
+                            </h2>
+                            {{ livedata }}
+                            <dl class="form-group">
+                                <div class="field">
+                                    <label>Display name</label>
+                                    <input type="text" placeholder="Display Name">
+                                    <p class="note">This will be the name displayed on your profile.</p>
+                                </div>
+                                <div class="field">
+                                    <label>Email address</label>
+                                    <input type="text" placeholder="Email@email.com">
+                                    <p class="note">Your email will be used for logging in. We're keeping this
+                                    to ourselves.
+                                    </p>
+                                </div>
+                                <div class="field">
+                                    <label>Password</label>
+                                    <input type="password" placeholder="Password">
+                                    <p class="note">Use at least one lowercase letter and seven characters.</p>
+                                </div>                
+                                <button class="ui button primary mt-3" type="submit">Register</button>
+                            </dl>
+                        </form>                    
                     </div>
-                    <div class="field">
-                        <label>Email address</label>
-                        <input type="text" name="email" placeholder="Email@email.com">
-                        <p class="note">Your email will be used for logging in. We're keeping this
-                        to ourselves.
-                        </p>
-                    </div>
-                    <div class="field">
-                        <label>Password</label>
-                        <input type="password" name="password" placeholder="Password">
-                        <p class="note">Use at least one lowercase letter and seven characters.</p>
-                        </div>
-        
-                    <button class="ui button primary mt-3" type="submit">Register</button>
-                </dl>
-            </form>
+                </div>
             </div>
+        </div>
+        <div name="form-info" class="two">
+            <div class="header pt-5">
+                <div class="container clearfix text-center">
+                <img src="assets/images/ouroboros.png" width="400px">
+                </div>
+            </div>
+        </div>
+
+
     </div>
-    </div>
+
 ```
 
 Let's add some style to our `register.component.css`:
@@ -639,6 +673,9 @@ Let's add some style to our `register.component.css`:
         margin: 4px 0 2px 0;
         font-size: 12px;
         color: #333;        
+    }
+    .form-info{
+        width: 300px !important;
     }
 ``` 
 ## Routing
@@ -720,7 +757,13 @@ Open `app.component.html` and place
 ```html 
     <router-outlet></router-outlet>
 ```
+### Configure some links to have a route
 
+Inside the `login.component.html`, there is a link named **Create an account** we can bind the `Register Component` to this link by adding the `routerLink` method of `Angular`
+
+```html
+    New to Homunculi? <a routerLink="/register">Create an account.</a>
+```
 ### Test our routes
 
 We can test our routes by serving our application.
@@ -834,7 +877,7 @@ Open `http-request.service.ts` and add the code below:
 
     }
 ```
-## Setting up our registration form.
+## Binding the values of our registration form
 
 Let's start by opening `register.component.ts`. Here we will see the default boiler text setup by the `AngularCLI` when we made the register component. Since we will be using forms module, import the following to the file.
 
@@ -859,27 +902,261 @@ Let's create a `FormGroup` with the name `registrationForm` inside the **class**
         }
 
         generateForm() {
-    this.registrationForm = this.builder.group({
-      displayname: ['', [Validators.minLength(4) , Validators.required] ],
-      email: '',
-      password: ['', [Validators.minLength(8) , Validators.required] ]
-    });
+            this.registrationForm = this.builder.group({
+            displayname: '',
+            email: '',
+            password: ''
+            });
         }
     }   
 ```
-`registrationForm` is our `FormGroup` while it's contents `displayname`, `email`, and `password` are our `FormControl`. The `FormControl` can also act the same way as models which have **bindings** with our application. To see this in action we can add a `get livedata` method and call this in our template page.
+`registrationForm` is our `FormGroup` while it's contents `displayname`, `email`, and `password` are our `FormControl`. The `FormControl` can also act the same way as models which have **bindings** with our application. To see this in action we can add a `livedata` method and call this in our template page.
 
 ```typescript
     //register.component.ts
-    get livedata() { return this.registrationForm.value; }
+    get livedata() { return JSON.stringify(this.registrationForm.value); }
 ```
+
+Add some bindings to our `register.component.html`, and call the `livedata` method to see the binding in action.
 
 ```html
     //register.component.html
+    ...
+    <h2 class="f2-light mb-1">
+        Create your own account
+    </h2>
+    {{ livedata }}
+
+    ...
+    <form class="ui form" [formGroup]="registrationForm">
+
+    ...
+    <input type="text" placeholder="Display Name" formControlName="displayname">
+
+    ...
+    <input type="text" placeholder="Email@email.com" formControlName="email">
+
+    ...
+    <input type="password" placeholder="Password" formControlName="password">
 ```
+
+Notice that as your type, you can see how the values of the `FormGroup` and `FormControl` change instantaneously.
+
+To call their values inside our template `register.component.html` and in our component `register.component.ts`. You can use the functions below.
+
+```html
+    {{ registerForm.get('displayname').value }}
+    {{ registerForm.get('email').value }}
+    {{ registerForm.get('password').value }}
+```
+
+```typescript
+    registerForm.get('displayname').value
+    registerForm.get('email').value
+    registerForm.get('password').value
+```
+
+Once you're done testing don't forget to remove the `{{ livedata }}` call we did inside our html.
+
+## Adding validation to our form
+
+Earlier we added an import to `Validators` to `register.component.ts`. We can modify the `generateForm()` method to add validation. We can add as many validations as we want by creating an array.
+
+In this example, let's provide our form values with some rules.
+
+For `displayname`:
+    * Should have atleast 4 characters
+    * Should not be blank (required)
+
+For `email`:
+    * Should be a valid email
+    * Should not be blank (required)
+
+For `password`:
+    * Should have atleast 6 characters
+    * Should not be blank (required)
+
+For `Register` button:
+    * Should be disabled if the form is **invalid**
+
+Let's implement this by modifying `generateForm()` with the code below.
+
+```typescript
+    //register.component.ts
+  generateForm() {
+      this.registrationForm = this.builder.group({
+        displayname: ['', [Validators.minLength(4), Validators.required]],
+        email: ['', Validators.required ],
+        password: ['', [Validators.minLength(6), Validators.required]]
+      });
+  }
+```
+We need angular to know that the input for an email is actually for an email.
+
+```html
+    //register.component.html
+    <input type="email" placeholder="Email@email.com" email formControlName="email">
+```
+```html
+    //register.component.html
+    <button class="ui button primary mt-3" type="submit" [disabled]="registrationForm.invalid">Register</button>
+```
+
+Add some warning messages at the bottom of the `Ouroboros logo`. 
+We want the warning message to show errors according to the rules we set earlier.
+Modify the div with `name="form-info"` with the code below.
+
+```html
+    //register.component.html
+    <div name="form-info" class="two form-info">
+        <div class="header pt-5">
+            <div class="container clearfix text-center centered">
+            <img src="assets/images/ouroboros.png" width="200px">
+            </div>
+        </div>
+        <div class="ui">
+            <div *ngIf="registrationForm.get('displayname').status === 'INVALID' && (registrationForm.get('displayname').dirty || registrationForm.get('displayname').touched)" class="ui warning mini message">
+                <ul class="list">
+                    <li *ngIf="registrationForm.get('displayname').errors.minlength">Display name must be 4 characters long</li>
+                    <li *ngIf="registrationForm.get('displayname').errors.required">Please input a display name</li>
+                </ul>
+            </div>
+            <div *ngIf="registrationForm.get('email').status === 'INVALID' && (registrationForm.get('email').dirty || registrationForm.get('email').touched)" class="ui warning mini message">
+                <ul class="list">
+                    <li>Please enter a valid email address.</li>
+                </ul>
+            </div>
+            <div *ngIf="registrationForm.get('password').status === 'INVALID' && (registrationForm.get('password').dirty || registrationForm.get('password').touched)" class="ui warning mini message">
+                <ul class="list">
+                    <li *ngIf="registrationForm.get('password').errors.minlength">Password must be atleast 6 characters long.</li>
+                    <li *ngIf="registrationForm.get('password').errors.required">Please input a password</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+```
+
+So that we can obtain further visualization of a validation error occuring, let's add some new styles in `register.component.css`
+
+```css
+    /* register.component.css */
+    .ng-valid[required], .ng-valid.required input {
+        border: 1px solid #42A948 !important; /* green */
+    }
+    .ng-invalid.ng-dirty:not(form) {
+        border: 1px solid #a94442 !important; /* red */ 
+    }
+    .ui.form .warning.message, .ui.form {
+    display: block;
+    }  
+    .ui.input.error input { 
+        background-color: #fff6f6 !important; 
+        border-color: #e0b4b4 !important; 
+    }
+```
+## Sending our data to our Node server using our http-request service
+
+Now that we finished our form validation, we can send our data to our `node` using the `http-request.service` we created earlier.
+
+Inject the `http-request.service` to the `register.component.ts` by adding it to the constructor and importing it.
+
+```typescript
+    ...
+    import { HttpRequestService } from './../http-request.service';
+
+    ...
+    constructor(private builder: FormBuilder, private request: HttpRequestService) {
+        this.generateForm();
+    }
+```
+
+Let's assign a `onSubmit()` method to our form and add this method to our component. 
+
+The good thing about semantic is that the `forms` already have a `loading` view if we add a `loading` class inside the form. we can also place this feature in our `onSubmit()` method.
+
+Angular also implements the `async` and `await` api's similar to C#, we'll be using this to create a `blocking` of our code while it waits for a response to our request.
+
+Our `Node-Express` back-end has already been configured to give us errors, we can place this response inside a `response` object. Data handling will be assigned to a method named `handleResponse`.
+
+We will also add an additional `div` to handle our errors.
+```html
+    //register.component.html
+    ...
+    <form class="ui form" [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+
+    ...
+    <!-- Add this beside the other errors inside <div name="form-info"></div>-->
+    <div *ngIf="response.haserror" class="ui warning mini message">
+        <ul class="list">
+            <li>{{response.error}}</li>
+        </ul>
+    </div>
+    
+```
+
+```typescript
+    //register.component.ts
+    private response: Object = {
+        mess: null,
+        error: null,
+        haserror: false
+    };
+
+    async onSubmit() {
+        $('.ui.form').addClass('loading');
+        this.handleResponse(await this.request.registerUser(this.registrationForm.value));
+        $('.ui.form').removeClass('loading');
+    }
+
+    handleResponse(response: Object) {
+        console.log(response);
+        if (response['exists']) {
+        let mess: string;
+        switch (response['exists'] ) {
+            case 'displayname':
+            mess = 'Display name already exists.';
+            break;
+            case 'email':
+            mess = 'Email address already exists.';
+            break;
+        }
+        this.response['error'] = mess;
+        this.response['haserror'] = true;
+        }
+        if (response['status'] === 'ok') {
+        this.response['mess'] = 'Registration success';
+        this.response['haserror'] = false;
+        this.router.navigateByUrl('/login');
+        }
+    }
+```
+
+## Routing inside the typescript file
+If errors occur this will be shown on the right side of our page. However if registration succeeds let's try routing the user to the `Login Component` using `Router`. To do this we need to modify some parts of `register.component.ts` with the codes below:
+
+```typescript
+    //register.component.ts -> constructor
+    constructor(private builder: FormBuilder, private request: HttpRequestService, private router: Router) {
+        this.generateForm();
+    }
+
+    //register.component.ts -> handleResponse
+    if (response['status'] === 'ok') {
+        this.response['mess'] = 'Registration success';
+        this.response['haserror'] = false;
+        //route the user to the login page if registration succeeds
+        this.router.navigateByUrl('/login');
+    }
+```
+
+
 [node]: https://docs.npmjs.com/getting-started/installing-node
 [mLab]: https://mlab.com/
 [Postman]: https://www.getpostman.com/
+[MongoDB]: https://mongodb.com/
+[Express.js]: https://expressjs.com
+[Angular]: https://angular.io
+[Node.js]: https://nodejs.org
 
 [mongodb]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/mongodb.png
 [create]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/create.png

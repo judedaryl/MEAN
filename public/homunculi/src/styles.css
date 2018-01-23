@@ -29,3 +29,7 @@
 .secondary.pointing.menu.toc.item {
     display: none;
 }
+
+.items-center{
+    justify-content: center !important;
+}
