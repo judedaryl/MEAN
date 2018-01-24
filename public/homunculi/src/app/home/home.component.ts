@@ -1,5 +1,6 @@
 import { UserService } from './../user.service';
 import { Component, OnInit } from '@angular/core';
+import { Technologies } from './../models/technologies';
 
 @Component({
   selector: 'app-home',
@@ -8,17 +9,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
+  technologies = Technologies;
+
+
   constructor(private userService: UserService) { }
 
   ngOnInit() {
   }
 
   get displayname() {
-    const temp = JSON.parse(localStorage.getItem('user'));
-    return temp['displayname'];
+    return this.userService.user['displayname'];
   }
 
   get userLoggedIn(): boolean {
-    return this.userService.userLoggedIn;
+    return this.userService.user['loggedin'];
   }
 }

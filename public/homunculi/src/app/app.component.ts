@@ -14,10 +14,10 @@ export class AppComponent {
   }
 
   get userLoggedIn(): boolean {
-    return this.userService.userLoggedIn;
+    return this.userService.user['loggedin'];
   }
 
   signOut(): void {
-    localStorage.removeItem('user');
+    this.userService.signout();
   }
 }

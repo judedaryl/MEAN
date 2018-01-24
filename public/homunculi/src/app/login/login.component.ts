@@ -1,4 +1,3 @@
-
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { UserService } from './../user.service';
@@ -49,8 +48,6 @@ export class LoginComponent implements OnInit {
   }
 
   checkLogin() {
-    if (this.userService.userLoggedIn === true) { this.router.navigateByUrl('/home'); }
+    if (this.userService.user['loggedin'] === true) { this.router.navigateByUrl('/home'); }
   }
-
-  get test() { return JSON.stringify(this.loginForm.value); }
 }

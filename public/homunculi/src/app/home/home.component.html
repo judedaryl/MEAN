@@ -20,42 +20,15 @@
 
   <div class="ui panel">
     <div class="ui link cards">
-        <a class="ui card" href="https://mongodb.com">
+        <a class="ui card" href="{{ tech.link }}" *ngFor="let tech of technologies">
           <div class="content">
-            <div class="header">MongoDB</div>
-            <div class="meta">Database</div>
+            <div class="header">{{ tech.name }}</div>
+            <div class="meta">{{ tech.type }}</div>
             <div class="description">
-                MongoDB is the leading modern, general purpose database platform.
+                {{ tech.description }}
             </div>
           </div>
         </a>
-        <a class="ui card" href="https://expressjs.com/">
-          <div class="content">
-            <div class="header">Express.js</div>
-            <div class="meta">Back end</div>
-            <div class="description">
-                Express.js, or simply Express, is a web application framework for Node.js.
-            </div>
-          </div>
-        </a>
-        <a class="ui card" href="https://angular.io/">
-          <div class="content">
-            <div class="header">Angular</div>
-            <div class="meta">Front end</div>
-            <div class="description">
-                AngularJS is a JavaScript-based open-source front-end web application framework.
-            </div>
-          </div>
-        </a>
-        <a class="ui card" href="https://nodejs.org/">
-            <div class="content">
-              <div class="header">Node.js</div>
-              <div class="meta">Back end</div>
-              <div class="description">
-                  Node.js is an open-source, cross-platform JavaScript run-time environment for executing JavaScript code server-side. 
-              </div>
-            </div>
-          </a>
     </div>
   </div>
 

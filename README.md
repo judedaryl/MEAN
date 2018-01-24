@@ -826,8 +826,7 @@ Update it `app.module.ts` with:
 
 Now that we have our pages and our serving running, let's try to send some form data from our `register` module to our server's `CREATE` api.
 
-## Creating a HTTP service.
-
+### Creating a HTTP service.
 
 To follow some good practices, let's create a configuration file named `app.ts` inside a `config` folder, the folder structure should follow:
 
@@ -848,39 +847,22 @@ Create the service using `AngularCLI`
 
 Using the `AngularCLI`, our service will automatically be registered in our `app.module.ts` so we don't have to worry about that any more. 
 
-Let's cover the basics first, we will create a `Login method`, `Register method` and a generic `Post method` in our `http-request service`. To do this we will be using `angular's HttpClient module` we included earlier. Include the configuration file we created earlier.
+Since this project is concerned with login and registration, a generic `post` method will be implemented. Although a generic `get` has the same structure with the `post`. By generic, this service can be used in any project.
 
 Open `http-request.service.ts` and add the code below:
 
 ```typescript
     import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
     import { Injectable } from '@angular/core';
-    import { Config }   from '../config/app';
+    import { Config } from '../config/app';
 
     declare var $: any;
 
     @Injectable()
     export class HttpRequestService {
 
-        doingsomething: boolean;
         result: Object[];
         constructor(private hc: HttpClient) {
-            this.result = [];
-            this.doingsomething = false;
-        }
-
-        // Login service
-        async loginUser(params): Promise<any> {
-            try {
-                return await this.post(params,'/users/login');
-            } catch (error) {}
-        }
-
-        // Registration service
-        async registerUser(params): Promise<any> {
-            try {
-                return await this.post(params,'/users');
-            } catch (error) {}
         }
 
         async post(params, ext): Promise<any> {
@@ -894,7 +876,117 @@ Open `http-request.service.ts` and add the code below:
         }
 
     }
+
 ```
+
+### Creating a User service
+
+Create the service
+
+    ng generate service user --module=app
+
+The service created earlier is a generic one, this service will be more specific on the data we want to send and where to send them. We will create a `Login method` and a `Register method` and use the `http-request service` we created earlier to do the heavy lifting.
+
+### Creating a User class
+
+Since afterall this will handle user information, let's create a user class. You can do this by using the `AngularCLI` command **BUT** personally i prefer manually making the file so we can maintain the arrangement of our files.
+
+Create a `model` folder inside the app folder and make a new `user.ts` file inside it
+
+    > root > public > homunculi > src > app > models
+
+Open `user.ts` and copy the code:
+
+```typescript
+export const User: Object = {
+  displayname: '',
+  email: '',
+  password: '',
+};
+
+```
+
+Now that a `user` object is made, import this and the `http-request service`
+Open `user.service.ts`
+
+```typescript
+//user.service.ts
+import { User } from './models/user';
+import { HttpRequestService } from './http-request.service';
+import { Injectable } from '@angular/core';
+```
+
+Inside the class, assign a variable to the `user` object and add our `http-request service` to the constructor.
+
+```typescript
+//user.service.ts
+@Injectable()
+export class UserService {
+    user = User;
+    constructor(private request: HttpRequestService){}
+}
+```
+
+Add a `login`, `signout` and `register` method. Both `login` and `register` should be `async`. When the user is trying to log-in and is successful in doing so, store the `displayname` and `email` to our model.
+
+```typescript
+//user.service.ts
+  async login(params): Promise<any> {
+    const response =  await this.request.post(params, '/users/login');
+    if (response['status'] === 'ok' ) {
+      console.log(response['data']);
+      if (response['data'] !== null) {
+        this.user['displayname'] = response['data']['displayname'];
+        this.user['email'] = response['data']['email'];
+        this.user['loggedin'] = true;
+      }
+    }
+    return response;
+  }
+
+  async register(params): Promise<any> {
+    try {
+        return await this.request.post(params, '/users');
+    } catch (error) {}
+  }
+
+  signout(): void {
+      this.user['loggedin'] = false;
+  }
+```
+## Using localStorage
+
+The `user service` will be managing all the data about a user and as such it will also be handling the storage of this data. Angular already has this method `localStorage`. Angular uses cookies for this. 
+
+Add this method to the `user service` to save user data after the user has successfully logged-in. Modify the `signout` to remove the user details from the `localStorage`. 
+
+If a user has logged-in simply change the property `loggedin` of the model `user` to true, and false otherwise.
+
+```typescript
+//user.service.ts
+async login(params): Promise<any> {
+    const response =  await this.request.post(params, '/users/login');
+    if (response['status'] === 'ok' ) {
+        console.log(response['data']);
+        if (response['data'] !== null) {
+        this.user['displayname'] = response['data']['displayname'];
+        this.user['email'] = response['data']['email'];
+        this.user['loggedin'] = true;
+        //STORE INFORMATION
+        localStorage.setItem('user', JSON.stringify(this.user));
+        }
+    }
+    return response;
+}
+
+signout(): void {
+    localStorage.removeItem('user');
+    this.user['loggedin'] = false;
+}
+```
+
+Leave these services be for the moment and let's continue on with our forms.
+
 ## Binding the values of our registration form
 
 Let's start by opening `register.component.ts`. Here we will see the default boiler text setup by the `AngularCLI` when we made the register component. Since we will be using forms module, import the following to the file.
@@ -1094,32 +1186,27 @@ The good thing about semantic is that the `forms` already have a `loading` view 
 
 Angular also implements the `async` and `await` api's similar to C#, we'll be using this to create a `blocking` of our code while it waits for a response to our request.
 
-Our `Node-Express` back-end has already been configured to give us errors, we can place this response inside a `response` object. Data handling will be assigned to a method named `handleResponse`.
+Our `Node-Express` back-end has already been configured to give us errors, we can place this response inside a `response` object. Import and assign a variable to this object inside our class. Data handling will be assigned to a method named `handleResponse`.
 
-We will also add an additional `div` to handle our errors.
-```html
-    //register.component.html
-    ...
-    <form class="ui form" [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+Create the `response` object inside our `models` folder.
 
-    ...
-    <!-- Add this beside the other errors inside <div name="form-info"></div>-->
-    <div *ngIf="response.haserror" class="ui warning mini message">
-        <ul class="list">
-            <li>{{response.error}}</li>
-        </ul>
-    </div>
-    
+    root > public > homunculi > src > app > models > response.ts
+
+```typescript
+export const Response: Object = {
+    mess: null,
+    error: null,
+    haserror: false
+};
 ```
 
 ```typescript
     //register.component.ts
-    private response: Object = {
-        mess: null,
-        error: null,
-        haserror: false
-    };
-
+    import { Response } from './../models/response';
+```
+```typescript
+    //register.component.ts
+    response = Response;
     async onSubmit() {
         $('.ui.form').addClass('loading');
         this.handleResponse(await this.request.registerUser(this.registrationForm.value));
@@ -1149,6 +1236,24 @@ We will also add an additional `div` to handle our errors.
     }
 ```
 
+We will also add an additional `div` to handle our errors.
+```html
+    //register.component.html
+    ...
+    <form class="ui form" [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+
+    ...
+    <!-- Add this beside the other errors inside <div name="form-info"></div>-->
+    <div *ngIf="response.haserror" class="ui warning mini message">
+        <ul class="list">
+            <li>{{response.error}}</li>
+        </ul>
+    </div>
+    
+```
+
+
+
 ## Logging in
 
 This will be good practice for you to setup the `Login Component` on your own. Just follow the same steps as the `Register Component`, just remember these steps.
@@ -1160,7 +1265,9 @@ This will be good practice for you to setup the `Login Component` on your own. J
     - `FormBuilder`
     - `UserService`
     - `Router`
+    - `Response`
 
+* Use the `Response` object
 * Creating a `FormGroup` and bind it with your form template inside the `component.html` file.
 * Create `Validators` to validate your form. Note that this is for logging in so we can ease up on the validation.
 * Bind some styles in the `component.css` to give some additional visualization of your form.
@@ -1175,6 +1282,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { UserService } from './../user.service';
 import { Router } from '@angular/router';
+import { Response } from './../models/response';
 
 declare var $: any;
 
@@ -1185,16 +1293,10 @@ declare var $: any;
 })
 export class LoginComponent implements OnInit {
 
-  private response: Object = {
-    mess: null,
-    error: null,
-    haserror: false
-  };
-
+  response = Response;
   loginForm: FormGroup;
 
   constructor(private builder: FormBuilder, private userService: UserService, private router: Router) {
-    this.checkLogin();
     this.generateForm();
   }
 
@@ -1223,11 +1325,6 @@ export class LoginComponent implements OnInit {
       this.response['haserror'] = true;
     }
   }
-
-  checkLogin() {
-    if (this.userService.userLoggedIn === true) { this.router.navigateByUrl('/home'); }
-  }
-
 }
 
 ```
@@ -1345,16 +1442,273 @@ If errors occur this will be shown on the right side of our page. However if reg
         this.router.navigateByUrl('/login');
     }
 ```
-## Creating a User service
 
-All information that pertains to a user will be included in this service. This will be handling specific http requests for `Login` and `Registration`. This service will provide information regarding stored data about the user.
+Add this feature to the `Login Component`. If a user is logged-in and goes to the `/login` route, the user should be redirected to the `/home` route.
 
-Create a `user service`
+Create a `checkLogin` method and call this in the constructor of `login.component.ts`. You can check if a user is actually logged in by using the `loggedin` property of `user` object from the `user service`.
 
-    ng generate service user --module=app
+Since `login.component.ts` was modeled after `register.component.ts` we should already have the `Router service` that we will use. 
 
-Import the `HttpRequestService` we
+```typescript
+  //login.component.ts
+  constructor(private builder: FormBuilder, private userService: UserService, private router: Router) {
+    this.checkLogin();
+    this.generateForm();
+  }
 
+    checkLogin() {
+    if (this.userService.user['loggedin'] === true) { this.router.navigateByUrl('/home'); }
+  }
+```
+
+## Revisit home page
+
+Let's add a some new features to our `Home` component and a new view. Our `Home` component should be able to tell if a user is `logged-in` or not.
+
+Go back and open `home.component.ts`, include the `user service` and call the property `loggedin` of the model `user`. Create a `get` method named `userLoggedIn` to retrieve and return the `loggedin` property, include another `get` method which retrieves the `displayname` of the `user` object.
+
+The `get` method in Angular is a mixture of both a `property` and `method`. You can call it directly in other classes or in your view and it returns the object you intend it to return. We used this earlier to check our live form data `{{ livedata }}`.
+
+
+```typescript
+//home.component.ts
+import { UserService } from './../user.service';
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.css']
+})
+export class HomeComponent implements OnInit {
+
+  constructor(private userService: UserService) { }
+
+  ngOnInit() {
+  }
+
+  get displayname() {
+    const temp = JSON.parse(localStorage.getItem('user'));
+    return temp['displayname'];
+  }
+
+  get userLoggedIn(): boolean {
+    return this.userService.user['loggedin'];
+  }
+}
+```
+
+In your view `home.component.html`, use `ngIf` and call on `userLoggedIn`
+
+```html
+<!--home.component.html-->
+<div *ngIf="userLoggedIn"> Hello there user {{ displayname }}</div>
+<div *ngIf="!userLoggedIn"> No one logged in </div>
+```
+
+### Models
+
+To add some visuals to the `home` component, we can add some [cards] and create a model and an array of that model for the content. We can also utilize another Angular function named `ngFor`, it is similar to the for loop that we are used to but it can be injected to our html properties.
+
+Create model `technology.ts` and object `technologies.ts` inside the `models` folder. `technologies.ts` is simply an array of `technology.ts` models.
+
+    root > public > homunculi > src > app > models > [technology.ts, technologies.ts]
+
+`technology.ts`
+
+```typescript
+///technology.ts
+export class Technology {
+    name: string;
+    type: string;
+    description: string;
+}
+```
+
+`technologies.ts`
+
+```typescript
+///technologies.ts
+import { Technology } from './technology';
+export const Technologies: Technology[] = [
+    {
+        name: 'MongoDB', type: 'Database',
+        description: 'MongoDB is the leading modern, general purpose database platform.'
+    },
+    {
+        name: 'Express.js', type: 'Back-end',
+        description: 'Express.js, or simply Express, is a web application framework for Node.js.'
+    },
+    {
+        name: 'Angular', type: 'Front end',
+        description: 'AngularJS is a JavaScript-based open-source front-end web application framework.'
+    },
+    {
+        name: 'Node.js', type: 'Back end',
+        description: 'Node.js is an open-source, cross-platform JavaScript run-time environment for executing JavaScript code server-side. '
+    },
+];
+```
+
+Open `home.component.ts` and import the `Technologies` object.
+
+```typescript
+//home.component.ts
+import { Technologies } from './../models/technologies';
+```
+Then assign a variable `technologies` to the `Technologies` object inside the class.
+
+```typescript
+//home.component.ts
+    export class HomeComponent implements OnInit {
+
+    technologies = Technologies;
+    ...
+```
+
+Open `home.component.html` and add the code below. This code implements a separate view if a user is **logged in** or not. It also uses `*ngFor` to automatically generate divs for each `Technology` we created.
+
+
+```html
+<!--home.component.html-->
+<div *ngIf="!userLoggedIn" class="ui text container masthead">
+  <h1 class="ui header">Homunculi</h1>
+  <h2>Developers who change the world</h2>
+  <a class="ui huge primary button" routerLink="/register">
+    Join us now <i class="right arrow icon"></i>
+  </a>
+</div>
+<div *ngIf="userLoggedIn" class="grid ui text stackable container">
+  <div class="container">
+      <div class="ui vertical menu">
+          <div class="item mini">
+            <div class="header">
+              Hello
+            </div>
+            {{displayname}}
+          </div>
+        </div>
+  </div>
+
+  <div class="ui panel">
+    <div class="ui link cards">
+        <a class="ui card" href="{{ tech.link }}" *ngFor="let tech of technologies">
+          <div class="content">
+            <div class="header">{{ tech.name }}</div>
+            <div class="meta">{{ tech.type }}</div>
+            <div class="description">
+                {{ tech.description }}
+            </div>
+          </div>
+        </a>
+    </div>
+  </div>
+</div>
+```
+
+Add some styles to `html.component.css`
+```css
+.ui.text.container {
+    max-width: 1000px !important;
+}
+.ui.panel {
+    max-width: 750px !important;
+}
+.masthead h1.ui.header {
+    margin-top: 1em !important;
+    margin-bottom: 0em !important;
+    font-size: 4em !important;
+    font-weight: normal !important;
+}
+.masthead h2 {
+    font-size: 1.7em !important;
+    font-weight: normal !important;
+}
+```
+
+## Adding a Sign-In, Register and Sign-Out menu.
+
+Revisit `app.component.html` and `app.component.ts`, Modify the application component so that it has the following features:
+
+- A menu with a sign-in button and register button that shows only if the user isn't logged in.
+- Another button in the menu with a sign-out button that shows only if the user is logged in.
+- A home button that redirects to `/home`
+
+You can check the one you've made with the code below.
+
+`app.component.html`
+
+```html
+<!--app.component.html-->
+<div class="ui vertical masthead aligned segment">
+        <div class="ui menu">
+                <a class="active item" routerLink="/home">
+                        Home
+                </a>
+                <div class="right menu">                
+                <div class="item">
+                <a *ngIf="!userLoggedIn" class="ui primary button" routerLink="/login">Sign in</a>
+                <a *ngIf="!userLoggedIn" class="ui button" routerLink="/register">Register</a>
+                <a *ngIf="userLoggedIn" class="ui red button" (click)="signOut()">Sign out</a>
+                </div>
+                </div>
+                
+        </div>
+        <router-outlet></router-outlet>
+</div>
+```
+`app.component.css`
+
+```css
+.masthead.segment {
+    min-height:700px;
+    padding: 0em !important;
+}
+
+.masthead .ui.menu .ui.button {
+    margin-left: 0.5em;
+}
+
+.masthead h1.ui.header {
+    margin-top: 3em;
+    margin-bottom: 0em;
+    font-size: 4em;
+    font-weight: normal;
+}
+.ui.menu {
+    margin-bottom: 5em;
+}
+```
+
+`app.component.ts`
+```typescript
+import { UserService } from './user.service';
+import { Component } from '@angular/core';
+
+declare var $: any;
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  title = 'Homunculi';
+  constructor(private userService: UserService) {
+
+  }
+
+  get userLoggedIn(): boolean {
+    return this.userService.user['loggedin'];
+  }
+
+  signOut(): void {
+    this.userService.signout();
+  }
+}
+```
+
+# Implementing Authentication using JWT
+... Ongoing
 
 [node]: https://docs.npmjs.com/getting-started/installing-node
 [mLab]: https://mlab.com/
@@ -1363,6 +1717,7 @@ Import the `HttpRequestService` we
 [Express.js]: https://expressjs.com
 [Angular]: https://angular.io
 [Node.js]: https://nodejs.org
+[cards]: https://semantic-ui.com/views/card.html
 [ouroboros]: https://raw.githubusercontent.com/judedaryl/MEAN/master/public/homunculi/src/assets/images/ouroboros.png
 [mongodb_]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/mongodb.png
 [create]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/create.png
