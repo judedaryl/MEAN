@@ -1,12 +1,18 @@
-# Creating a MEAN stack
+# Homunculi
+## A MEAN stack that handles login and registration
+
+<div style="text-align:center">
+<img src="https://raw.githubusercontent.com/judedaryl/MEAN/master/public/homunculi/src/assets/images/ouroboros.png" width="150" height="150">
+</div>
+
 [MongoDB] [Express.js] [Angular] [Node.js]
 
-This will be a step-by-step walkthrough with explanation and codes. No worries if you 
+This is a step-by-step walkthrough with explanation and codes. Don't worry if you 
 have trouble with the code, you can check the codes in the folders inside this git.
 
 # Setting up a back-end server (Node using Express and MongoClient)
 
-## Getting our node and express working
+# Getting our node and express working
 Install [node].
 In a new directory, run npm init together with the following prompts.
 
@@ -822,21 +828,35 @@ Now that we have our pages and our serving running, let's try to send some form 
 
 ## Creating a HTTP service.
 
+
+To follow some good practices, let's create a configuration file named `app.ts` inside a `config` folder, the folder structure should follow:
+
+    root > public > homunculi > config > app.ts
+
+Open app.ts and let's place our server url.
+
+```typescript
+    //app.ts
+    export const Config = {
+        api = "localhost://9090"
+    }
+```  
+
 Create the service using `AngularCLI`
 
     ng generate service http-request --module=app
 
 Using the `AngularCLI`, our service will automatically be registered in our `app.module.ts` so we don't have to worry about that any more. 
 
-Let's cover the basics first, we will create a `Login method`, `Register method` and a generic `Post method` in our `http-request service`. To do this we will be using `angular's HttpClient module` we included earlier.
+Let's cover the basics first, we will create a `Login method`, `Register method` and a generic `Post method` in our `http-request service`. To do this we will be using `angular's HttpClient module` we included earlier. Include the configuration file we created earlier.
 
 Open `http-request.service.ts` and add the code below:
 
 ```typescript
     import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
     import { Injectable } from '@angular/core';
+    import { Config }   from '../config/app';
 
-    const apiUrl = 'http://localhost:9090';
     declare var $: any;
 
     @Injectable()
@@ -863,13 +883,13 @@ Open `http-request.service.ts` and add the code below:
             } catch (error) {}
         }
 
-        async post(params, api): Promise<any> {
+        async post(params, ext): Promise<any> {
             let body = new HttpParams();
             $.each(params, function(k, v) {
             body = body.append(k, v);
             });
             try {
-            return await this.hc.post(apiUrl + api, body).toPromise();
+            return await this.hc.post(Config.api + ext, body).toPromise();
             } catch (error) {}
         }
 
@@ -1053,15 +1073,15 @@ So that we can obtain further visualization of a validation error occuring, let'
     }
 ```
 ## Sending our data to our Node server using our http-request service
-
+  
 Now that we finished our form validation, we can send our data to our `node` using the `http-request.service` we created earlier.
 
-Inject the `http-request.service` to the `register.component.ts` by adding it to the constructor and importing it.
+## Registration
+Inject the `http-request.service` to the `register.component.ts` by adding it to the constructor and importing it. Import our configuration file too.
 
 ```typescript
     ...
     import { HttpRequestService } from './../http-request.service';
-
     ...
     constructor(private builder: FormBuilder, private request: HttpRequestService) {
         this.generateForm();
@@ -1129,6 +1149,38 @@ We will also add an additional `div` to handle our errors.
     }
 ```
 
+## Logging in
+
+This will be good practice for you to setup the `Login Component` on your own. Just follow the same steps as the `Register Component`, just remember these steps.
+
+* Import the following:
+    - `FormsModule`
+    - `FormGroup`
+    - `FormControl`
+    - `FormBuilder`
+    - `UserService`
+    - `Router`
+
+* Creating a `FormGroup` and bind it with your form template inside the `component.html` file.
+* Create `Validators` to validate your form. Note that this is for logging in so we can ease up on the validation.
+* Bind some styles in the `component.css` to give some additional visualization of your form.
+* Handle submission by assign a `(ngSubmit)`
+* Process data for errors
+
+You can check on this codes below to check if your code is on the right track.
+
+`login.component.ts`
+```typescript
+```
+
+`login.component.html`
+```html
+```
+
+`login.component.css`
+```css
+```
+
 ## Routing inside the typescript file
 If errors occur this will be shown on the right side of our page. However if registration succeeds let's try routing the user to the `Login Component` using `Router`. To do this we need to modify some parts of `register.component.ts` with the codes below:
 
@@ -1146,6 +1198,15 @@ If errors occur this will be shown on the right side of our page. However if reg
         this.router.navigateByUrl('/login');
     }
 ```
+## Creating a User service
+
+All information that pertains to a user will be included in this service. This will be handling specific http requests for `Login` and `Registration`. This service will provide information regarding stored data about the user.
+
+Create a `user service`
+
+    ng generate service user --module=app
+
+Import the `HttpRequestService` we
 
 
 [node]: https://docs.npmjs.com/getting-started/installing-node
@@ -1155,7 +1216,7 @@ If errors occur this will be shown on the right side of our page. However if reg
 [Express.js]: https://expressjs.com
 [Angular]: https://angular.io
 [Node.js]: https://nodejs.org
-
+[ouroboros]: https://raw.githubusercontent.com/judedaryl/MEAN/master/public/homunculi/src/assets/images/ouroboros.png
 [mongodb_]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/mongodb.png
 [create]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/create.png
 [read-one]: https://raw.githubusercontent.com/judedaryl/MEAN/master/images/read-one.png

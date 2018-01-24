@@ -52,8 +52,8 @@ module.exports = function(app, db) {
         const password = req.body.password;
         const details = {'email': email, 'password': password };
         db.collection('users').findOne(details, (err,item)=>{
-            if(err) res.send(error);
-            else res.send(item);
+            if(err) res.send({error: err});
+            else res.send({status: 'ok', data: item});
         })
     });
 

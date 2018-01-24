@@ -1,4 +1,6 @@
+import { UserService } from './user.service';
 import { Component } from '@angular/core';
+
 declare var $: any;
 @Component({
   selector: 'app-root',
@@ -7,4 +9,15 @@ declare var $: any;
 })
 export class AppComponent {
   title = 'Homunculi';
+  constructor(private userService: UserService) {
+
+  }
+
+  get userLoggedIn(): boolean {
+    return this.userService.userLoggedIn;
+  }
+
+  signOut(): void {
+    localStorage.removeItem('user');
+  }
 }

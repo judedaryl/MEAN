@@ -9,6 +9,7 @@ import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { AppRoutingModule } from './/app-routing.module';
 import { HttpRequestService } from './http-request.service';
+import { UserService } from './user.service';
 
 
 @NgModule({
@@ -25,7 +26,7 @@ import { HttpRequestService } from './http-request.service';
     ReactiveFormsModule,
     HttpClientModule
   ],
-  providers: [HttpRequestService],
+  providers: [HttpRequestService, UserService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

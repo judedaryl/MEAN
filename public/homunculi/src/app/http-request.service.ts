@@ -1,40 +1,23 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Config } from '../config/app';
 
-const apiUrl = 'http://localhost:9090';
 declare var $: any;
 
 @Injectable()
 export class HttpRequestService {
 
-    doingsomething: boolean;
     result: Object[];
     constructor(private hc: HttpClient) {
-        this.result = [];
-        this.doingsomething = false;
     }
 
-    // Login service
-    async loginUser(params): Promise<any> {
-        try {
-            return await this.post(params, '/users/login');
-        } catch (error) {}
-    }
-
-    // Registration service
-    async registerUser(params): Promise<any> {
-        try {
-            return await this.post(params, '/users');
-        } catch (error) {}
-    }
-
-    async post(params, api): Promise<any> {
+    async post(params, ext): Promise<any> {
         let body = new HttpParams();
         $.each(params, function(k, v) {
         body = body.append(k, v);
         });
         try {
-        return await this.hc.post(apiUrl + api, body).toPromise();
+        return await this.hc.post(Config.api + ext, body).toPromise();
         } catch (error) {}
     }
 

@@ -1,0 +1,16 @@
+.ui.text.container {
+    max-width: 1000px !important;
+}
+.ui.panel {
+    max-width: 750px !important;
+}
+.masthead h1.ui.header {
+    margin-top: 1em !important;
+    margin-bottom: 0em !important;
+    font-size: 4em !important;
+    font-weight: normal !important;
+}
+.masthead h2 {
+    font-size: 1.7em !important;
+    font-weight: normal !important;
+}

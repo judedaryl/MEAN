@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { HttpRequestService } from './../http-request.service';
+import { UserService } from './../user.service';
 import { Router } from '@angular/router';
 
 
@@ -12,7 +12,7 @@ declare var $: any;
 })
 
 export class RegisterComponent implements OnInit {
-  
+
   private response: Object = {
     mess: null,
     error: null,
@@ -24,7 +24,7 @@ export class RegisterComponent implements OnInit {
   ngOnInit() {
 
   }
-  constructor(private builder: FormBuilder, private request: HttpRequestService, private router: Router) {
+  constructor(private builder: FormBuilder, private userService: UserService, private router: Router) {
       this.generateForm();
   }
 
@@ -36,11 +36,9 @@ export class RegisterComponent implements OnInit {
       });
   }
 
-  
-
   async onSubmit() {
     $('.ui.form').addClass('loading');
-    this.handleResponse(await this.request.registerUser(this.registrationForm.value));
+    this.handleResponse(await this.userService.register(this.registrationForm.value));
     $('.ui.form').removeClass('loading');
   }
 
@@ -64,7 +62,6 @@ export class RegisterComponent implements OnInit {
       this.response['haserror'] = false;
       this.router.navigateByUrl('/login');
     }
-
   }
 
   get livedata() { return JSON.stringify(this.registrationForm.value); }

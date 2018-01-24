@@ -1,6 +1,6 @@
 .masthead.segment {
     min-height:700px;
-    padding: 1em 0em;
+    padding: 0em !important;
 }
 
 .masthead .ui.menu .ui.button {
@@ -13,7 +13,9 @@
     font-size: 4em;
     font-weight: normal;
 }
-
+.ui.menu {
+    margin-bottom: 5em;
+}
 
 
 

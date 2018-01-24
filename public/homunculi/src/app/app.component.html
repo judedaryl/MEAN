@@ -1,4 +1,17 @@
 <div class="ui vertical masthead aligned segment">
+        <div class="ui menu">
+                <a class="active item" routerLink="/home">
+                        Home
+                </a>
+                <div class="right menu">                
+                <div class="item">
+                <a *ngIf="!userLoggedIn" class="ui primary button" routerLink="/login">Sign in</a>
+                <a *ngIf="!userLoggedIn" class="ui button" routerLink="/register">Register</a>
+                <a *ngIf="userLoggedIn" class="ui red button" (click)="signOut()">Sign out</a>
+                </div>
+                </div>
+                
+        </div>
         <router-outlet></router-outlet>
 </div>
 

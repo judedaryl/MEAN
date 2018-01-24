@@ -5,20 +5,24 @@
 </div>
 <div class="ui container">
     <div class="auth-form px-3">
-        <form class="ui form">
         <div class="auth-form-header p-0">
-            <h1 class="inverted">Sign in to Homunculi</h1>
+                <h1 class="inverted">Sign in to Homunculi</h1>
         </div>
+        <div *ngIf="response.haserror" class="ui error mini message">
+            <div class="header">{{response.error}}</div>      
+        </div>
+        <form class="ui form" [formGroup]="loginForm" (ngSubmit)="onSubmit()"> 
+
         <div class="auth-form-body mt-3">
             <div class="field">
                 <label>Email address</label>
-                <input type="text" name="email" placeholder="Email@email.com"/>
+                <input type="email" email name="email" placeholder="Email@email.com" formControlName="email"/>
                 </div>
                 <div class="field">
                 <label>Password</label>
-                <input type="password" name="password" placeholder="Password"/>
+                <input type="password" name="password" placeholder="Password" formControlName="password"/>
                 </div>
-                <button class="ui primary button mt-3">
+                <button class="ui primary button mt-3" [disabled]="loginForm.invalid">
                 Sign In
                 </button>
             </div>

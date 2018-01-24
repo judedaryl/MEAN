@@ -1,7 +1,62 @@
-<div class="ui text container">
-  <h1 class="ui inverted header">
-      {{title}}
-  </h1>
-  <h2>Do whatever you want when you want to.</h2>
-  <div class="ui huge primary button">Get Started <i class="right arrow icon"></i></div>
+<div *ngIf="!userLoggedIn" class="ui text container masthead">
+<h1 class="ui header">Homunculi</h1>
+<h2>Developers that change the word</h2>
+<a class="ui huge primary button" routerLink="/register">
+  Join us now <i class="right arrow icon"></i>
+</a>
+</div>
+<div *ngIf="userLoggedIn" class="grid ui text stackable container">
+
+  <div class="container">
+      <div class="ui vertical menu">
+          <div class="item mini">
+            <div class="header">
+              Hello
+            </div>
+            {{displayname}}
+          </div>
+        </div>
+  </div>
+
+  <div class="ui panel">
+    <div class="ui link cards">
+        <a class="ui card" href="https://mongodb.com">
+          <div class="content">
+            <div class="header">MongoDB</div>
+            <div class="meta">Database</div>
+            <div class="description">
+                MongoDB is the leading modern, general purpose database platform.
+            </div>
+          </div>
+        </a>
+        <a class="ui card" href="https://expressjs.com/">
+          <div class="content">
+            <div class="header">Express.js</div>
+            <div class="meta">Back end</div>
+            <div class="description">
+                Express.js, or simply Express, is a web application framework for Node.js.
+            </div>
+          </div>
+        </a>
+        <a class="ui card" href="https://angular.io/">
+          <div class="content">
+            <div class="header">Angular</div>
+            <div class="meta">Front end</div>
+            <div class="description">
+                AngularJS is a JavaScript-based open-source front-end web application framework.
+            </div>
+          </div>
+        </a>
+        <a class="ui card" href="https://nodejs.org/">
+            <div class="content">
+              <div class="header">Node.js</div>
+              <div class="meta">Back end</div>
+              <div class="description">
+                  Node.js is an open-source, cross-platform JavaScript run-time environment for executing JavaScript code server-side. 
+              </div>
+            </div>
+          </a>
+    </div>
+  </div>
+
 </div>
