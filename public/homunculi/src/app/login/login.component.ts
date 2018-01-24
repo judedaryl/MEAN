@@ -1,7 +1,9 @@
+
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { UserService } from './../user.service';
 import { Router } from '@angular/router';
+import { Response } from './../models/response';
 
 declare var $: any;
 
@@ -12,12 +14,7 @@ declare var $: any;
 })
 export class LoginComponent implements OnInit {
 
-  private response: Object = {
-    mess: null,
-    error: null,
-    haserror: false
-  };
-
+  response = Response;
   loginForm: FormGroup;
 
   constructor(private builder: FormBuilder, private userService: UserService, private router: Router) {

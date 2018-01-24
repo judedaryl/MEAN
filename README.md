@@ -1171,14 +1171,161 @@ You can check on this codes below to check if your code is on the right track.
 
 `login.component.ts`
 ```typescript
+import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { UserService } from './../user.service';
+import { Router } from '@angular/router';
+
+declare var $: any;
+
+@Component({
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.css']
+})
+export class LoginComponent implements OnInit {
+
+  private response: Object = {
+    mess: null,
+    error: null,
+    haserror: false
+  };
+
+  loginForm: FormGroup;
+
+  constructor(private builder: FormBuilder, private userService: UserService, private router: Router) {
+    this.checkLogin();
+    this.generateForm();
+  }
+
+  generateForm() {
+    this.loginForm = this.builder.group({
+      email: ['', Validators.required],
+      password: ['', Validators.required]
+    });
+
+  }
+  ngOnInit() {
+  }
+
+  async onSubmit() {
+    $('.ui.form').addClass('loading');
+    this.handleResponse(await this.userService.login(this.loginForm.value));
+    $('.ui.form').removeClass('loading');
+  }
+
+  handleResponse(response: Object) {
+    if (response['data']) {
+      this.response['haserror'] = false;
+      this.checkLogin();
+    } else {
+      this.response['error'] = 'Invalid email address or password';
+      this.response['haserror'] = true;
+    }
+  }
+
+  checkLogin() {
+    if (this.userService.userLoggedIn === true) { this.router.navigateByUrl('/home'); }
+  }
+
+}
+
 ```
 
 `login.component.html`
 ```html
+<div class="header width-full pt-5">
+    <div class="container clearfix width-full text-center">
+    <img src="https://raw.githubusercontent.com/judedaryl/MEAN/master/public/homunculi/src/assets/images/ouroboros.png" width="100px">
+    </div>
+</div>
+<div class="ui container">
+    <div class="auth-form px-3">
+        <div class="auth-form-header p-0">
+                <h1 class="inverted">Sign in to Homunculi</h1>
+        </div>
+        <div *ngIf="response.haserror" class="ui error mini message">
+            <div class="header">{{response.error}}</div>      
+        </div>
+        <form class="ui form" [formGroup]="loginForm" (ngSubmit)="onSubmit()"> 
+
+        <div class="auth-form-body mt-3">
+            <div class="field">
+                <label>Email address</label>
+                <input type="email" email name="email" placeholder="Email@email.com" formControlName="email"/>
+                </div>
+                <div class="field">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Password" formControlName="password"/>
+                </div>
+                <button class="ui primary button mt-3" [disabled]="loginForm.invalid">
+                Sign In
+                </button>
+            </div>
+        </form>
+        <p class="mt-3 register-callout">
+        New to Homunculi? <a routerLink="/register">Create an account.</a>
+        </p>
+    </div>
+</div>
 ```
 
 `login.component.css`
 ```css
+.auth-form{
+    width:340px;
+    margin: 0 auto 0 auto;
+}
+
+.auth-form-header {
+    margin-bottom: 15px;
+    color: #333;
+    text-align: center;
+    text-shadow: none;
+    background-color: transparent;
+    border: 0;
+}
+
+.auth-form-header h1{
+    font-size: 24px;
+    color: black;
+    font-weight: 300;
+    letter-spacing:  -0.5px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.auth-form-body {
+    padding: 20px;
+    font-size: 14px;
+    background-color: #fff;
+    border: 1px solid #d8dee2;
+    border-radius: 4px;
+}
+
+.auth-form-body button{
+    width: 100%;
+}
+
+.register-callout {
+    padding: 15px 20px 15px 20px;
+    text-align: center;
+    border: 1px solid #d8dee2;
+    border-radius: 5px;
+}
+
+.ng-valid[required], .ng-valid.required input {
+    border: 1px solid #42A948 !important; /* green */
+}
+.ng-invalid.ng-dirty:not(form) {
+    border: 1px solid #a94442 !important; /* red */ 
+}
+.ui.form .warning.message, .ui.form {
+display: block;
+}  
+.ui.input.error input { 
+    background-color: #fff6f6 !important; 
+    border-color: #e0b4b4 !important; 
+}
 ```
 
 ## Routing inside the typescript file
