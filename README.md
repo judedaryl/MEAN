@@ -1,9 +1,9 @@
-# Homunculi
-## A MEAN stack that handles login and registration
-
 <div style="text-align:center">
 <img src="https://raw.githubusercontent.com/judedaryl/MEAN/master/public/homunculi/src/assets/images/ouroboros.png" width="150" height="150">
 </div>
+
+# Homunculi
+## A MEAN stack that handles login and registration
 
 [MongoDB] [Express.js] [Angular] [Node.js]
 
