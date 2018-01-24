@@ -10,9 +10,9 @@
 This is a step-by-step walkthrough with explanation and codes. Don't worry if you 
 have trouble with the code, you can check the codes in the folders inside this git.
 
-# Setting up a back-end server (Node using Express and MongoClient)
+## Setting up a back-end server (Node using Express and MongoClient)
 
-# Getting our node and express working
+### Getting our node and express working
 Install [node].
 In a new directory, run npm init together with the following prompts.
 
