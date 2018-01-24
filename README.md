@@ -1274,7 +1274,7 @@ This will be good practice for you to setup the `Login Component` on your own. J
 * Handle submission by assign a `(ngSubmit)`
 * Process data for errors
 
-You can check on this codes below to check if your code is on the right track.
+You can check on the codes below to check if your code is on the right track.
 
 `login.component.ts`
 ```typescript
