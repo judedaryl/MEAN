@@ -34,7 +34,7 @@ body-parser to process JSON requests.
 
 Install Nodemon as a dev dependecy. It automatically restarts your server when files change.
 
-    npm install --save-dev nodem
+    npm install --save-dev nodemon
 
 Add this to package.json
 ```javascript
